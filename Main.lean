@@ -15,3 +15,11 @@ def main : IO Unit := do
 
   let greeting := Doc.text "Willkommen zur leansi-Bibliothek!"
   IO.println s!"Greeting: '{render greeting}'"
+
+  -- Roter Text!
+  IO.println (renderStyled Style.red "Frohe Weihnachten!")
+
+    -- Kombinationen
+  IO.println (renderStyled { Style.red with bold := true } "Rot und Fett!")
+  IO.println (renderStyled Style.green "Grüner Text!")
+  IO.println (renderStyled Style.blue "Blauer Text!")
