@@ -1,0 +1,7 @@
+name = "leansi"
+version = "0.1.0"
+defaultTargets = ["leansi"]
+
+[[lean_exe]]
+name = "leansi"
+root = "Main"
