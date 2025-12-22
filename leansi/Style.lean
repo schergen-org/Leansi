@@ -13,7 +13,6 @@ structure Style where
   italic : Bool := false
 deriving Repr, Inhabited, BEq
 
-
 namespace Style
 
 def boldStyle : Style := { bold := true }

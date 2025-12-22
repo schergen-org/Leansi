@@ -3,8 +3,8 @@ version = "0.1.0"
 defaultTargets = ["leansi"]
 
 [[lean_lib]]
-name = "Leansi"
+name = "leansi"
 
 [[lean_exe]]
-name = "leansi"
+name = "Leansi"
 root = "Main"
