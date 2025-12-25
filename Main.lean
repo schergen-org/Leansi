@@ -17,22 +17,6 @@ def main : IO Unit := do
   --let greeting := Doc.text "Willkommen zur leansi-Bibliothek!"
   --IO.println s!"Greeting: '{render greeting}'"
 
-  -- Roter Text!
-  IO.println (renderStyled Style.red "Frohe Weihnachten!")
-
-  -- Kombinationen
-  IO.println (renderStyled { Style.red with bold := true } "Rot und Fett!")
-  IO.println (renderStyled Style.green "Grüner Text!")
-  IO.println (renderStyled Style.blue "Blauer Text!")
-
-  IO.println (renderStyled Style.boldStyle "Just bold?")
-
-  IO.println (renderStyled Style.boldStyle.italicStyle.underlineStyle.green.black "Some test text with multiple styles.")
-
-  -- Doc
-  let testDoc : Doc Style := (Doc.text "Test tecxt with style.").ann Style.boldStyle.underlineStyle.green
-
-  IO.println (testDoc)
 
   IO.println ((Doc.text "This is bold text.").bold.underline)
   -- IO.println ((Doc.bold.text "This is bold text."))
