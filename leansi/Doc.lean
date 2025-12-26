@@ -53,4 +53,9 @@ def bg_cyan (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with 
 def bg_white (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some 47 }
 
 end Doc
+
+-- Instance op append for Doc to use `doc ++ doc`
+instance {ann : Type} : Append (Doc ann) where
+  append := Doc.concat
+
 end leansi

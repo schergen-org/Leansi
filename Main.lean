@@ -24,4 +24,4 @@ def main : IO Unit := do
 
   -- IO.println (Doc.bg_blue.underline.s "This text has a blue background and is underlined.")
 
-  IO.println ((Doc.text "some text" |> bold |> underline |> yellow).concat (Doc.text " and some cyan text." |> italic |> cyan |> bg_magenta))
+  IO.println ((Doc.text "some text" |> bold |> underline |> yellow) ++ (Doc.text " and some cyan text." |> italic |> cyan |> bg_magenta))
