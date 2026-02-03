@@ -2,6 +2,9 @@ name = "leansi"
 version = "0.1.0"
 defaultTargets = ["leansi"]
 
-[[lean_exe]]
+[[lean_lib]]
 name = "leansi"
+
+[[lean_exe]]
+name = "Leansi"
 root = "Main"
