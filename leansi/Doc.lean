@@ -16,6 +16,16 @@ def bold (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bol
 def underline (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with underline := true }
 /-- Makes text appear *italic* -/
 def italic (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with italic := true }
+/-- Makes text appear dim -/
+def dim (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with dim := true }
+/-- Makes text appear blinking -/
+def blink (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with blink := true }
+/-- Reverses the colors of the text -/
+def reverse (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with reverse := true }
+/-- Hides the text -/
+def hidden (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with hidden := true }
+/-- Makes the text appear strikethrough -/
+def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with strikethrough := true }
 
 -- Ansi 16 colors
 /-- Makes text appear black -/
