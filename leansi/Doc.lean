@@ -28,39 +28,43 @@ def hidden (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with h
 def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with strikethrough := true }
 
 -- Ansi 16 colors
+def fg (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some code }
 /-- Makes text appear black -/
-def black (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 30 }
+def black := fg 30
 /-- Makes text appear red -/
-def red (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 31 }
+def red := fg 31
 /-- Makes text appear green -/
-def green (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 32 }
+def green := fg 32
 /-- Makes text appear yellow -/
-def yellow (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 33 }
+def yellow := fg 33
 /-- Makes text appear blue -/
-def blue (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 34 }
+def blue := fg 34
 /-- Makes text appear magenta -/
-def magenta (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 35 }
+def magenta := fg 35
 /-- Makes text appear cyan -/
-def cyan (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some 36 }
+def cyan := fg 36
 /-- Makes text appear white -/
-def white (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some 37 }
+def white := fg 37
 
+def bg (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some code }
 /-- Makes background appear black -/
-def bg_black (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 40 }
+def bg_black := bg 40
 /-- Makes background appear red -/
-def bg_red (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 41 }
+def bg_red := bg 41
 /-- Makes background appear green -/
-def bg_green (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 42 }
+def bg_green := bg 42
 /-- Makes background appear yellow -/
-def bg_yellow (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 43 }
+def bg_yellow := bg 43
 /-- Makes background appear blue -/
-def bg_blue (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 44 }
+def bg_blue := bg 44
 /-- Makes background appear magenta -/
-def bg_magenta (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 45 }
+def bg_magenta := bg 45
 /-- Makes background appear cyan -/
-def bg_cyan (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some 46 }
+def bg_cyan := bg 46
 /-- Makes background appear white -/
-def bg_white (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some 47 }
+def bg_white := bg 47
 
 end Doc
 
