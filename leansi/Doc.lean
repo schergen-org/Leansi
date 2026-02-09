@@ -28,43 +28,48 @@ def hidden (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with h
 def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with strikethrough := true }
 
 -- Ansi 16 colors
-def fg (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
-  doc.ann { s with fg := some code }
+def fg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some code, colorLevel := colorLevel.ansi16 }
 /-- Makes text appear black -/
-def black := fg 30
+def black := fg_ansi_16 30
 /-- Makes text appear red -/
-def red := fg 31
+def red := fg_ansi_16 31
 /-- Makes text appear green -/
-def green := fg 32
+def green := fg_ansi_16 32
 /-- Makes text appear yellow -/
-def yellow := fg 33
+def yellow := fg_ansi_16 33
 /-- Makes text appear blue -/
-def blue := fg 34
+def blue := fg_ansi_16 34
 /-- Makes text appear magenta -/
-def magenta := fg 35
+def magenta := fg_ansi_16 35
 /-- Makes text appear cyan -/
-def cyan := fg 36
+def cyan := fg_ansi_16 36
 /-- Makes text appear white -/
-def white := fg 37
+def white := fg_ansi_16 37
 
-def bg (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
-  doc.ann { s with bg := some code }
+def bg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some code, colorLevel := colorLevel.ansi16 }
 /-- Makes background appear black -/
-def bg_black := bg 40
+def bg_black := bg_ansi_16 40
 /-- Makes background appear red -/
-def bg_red := bg 41
+def bg_red := bg_ansi_16 41
 /-- Makes background appear green -/
-def bg_green := bg 42
+def bg_green := bg_ansi_16 42
 /-- Makes background appear yellow -/
-def bg_yellow := bg 43
+def bg_yellow := bg_ansi_16 43
 /-- Makes background appear blue -/
-def bg_blue := bg 44
+def bg_blue := bg_ansi_16 44
 /-- Makes background appear magenta -/
-def bg_magenta := bg 45
+def bg_magenta := bg_ansi_16 45
 /-- Makes background appear cyan -/
-def bg_cyan := bg 46
+def bg_cyan := bg_ansi_16 46
 /-- Makes background appear white -/
-def bg_white := bg 47
+def bg_white := bg_ansi_16 47
+
+/-- Set foreground color using Ansi256 codes -/
+def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some color, colorLevel := colorLevel.ansi256 }
+/-- Set background color using Ansi256 codes -/
+def bg_ansi_256 (doc : Doc Style) (color : Nat) (s : Style := {}) : Doc Style := doc.ann { s with bg := some color, colorLevel := colorLevel.ansi256 }
 
 end Doc
 
