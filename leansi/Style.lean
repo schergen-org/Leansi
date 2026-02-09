@@ -3,11 +3,12 @@ namespace leansi
 inductive colorLevel where
   | none
   | ansi16
+  | ansi256
 deriving Repr, Inhabited, BEq
 
 structure Style where
-  fg : Option Nat :=none
-  bg : Option Nat :=none
+  fg : Option Nat := none
+  bg : Option Nat := none
   bold : Bool := false
   dim : Bool := false
   underline : Bool := false
@@ -16,6 +17,7 @@ structure Style where
   reverse : Bool := false
   hidden : Bool := false
   strikethrough : Bool := false
+  colorLevel : colorLevel := colorLevel.none
 deriving Repr, Inhabited, BEq
 
 namespace Style
