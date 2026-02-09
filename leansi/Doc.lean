@@ -69,7 +69,7 @@ def bg_white := bg_ansi_16 47
 /-- Set foreground color using Ansi256 codes -/
 def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some color, colorLevel := colorLevel.ansi256 }
 /-- Set background color using Ansi256 codes -/
-def bg_ansi_256 (doc : Doc Style) (color : Nat) (s : Style := {}) : Doc Style := doc.ann { s with bg := some color, colorLevel := colorLevel.ansi256 }
+def bg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some color, colorLevel := colorLevel.ansi256 }
 
 end Doc
 
