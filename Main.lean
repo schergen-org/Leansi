@@ -24,4 +24,9 @@ def main : IO Unit := do
 
   -- IO.println (Doc.bg_blue.underline.s "This text has a blue background and is underlined.")
 
-  IO.println ((Doc.text "some text" |> bold |> underline |> yellow) ++ (Doc.text " and some cyan text." |> italic |> cyan |> bg_magenta))
+  IO.println ((Doc.text "some text" |> bold |> underline |> green) ++ (Doc.text " and some cyan text." |> italic |> cyan |> bg_magenta))
+
+  IO.println (Doc.text "Ansi 256 test code: 54" |> fg_ansi_256 54)
+  IO.println (Doc.text "Ansi 256 test code: 55" |> fg_ansi_256 55)
+  IO.println (Doc.text "Ansi 256 test code: 56" |> fg_ansi_256 56)
+  IO.println (Doc.text "Ansi 256 test code: 57" |> fg_ansi_256 57)
