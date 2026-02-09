@@ -47,6 +47,30 @@ def cyan := fg_ansi_16 36
 /-- Makes text appear white -/
 def white := fg_ansi_16 37
 
+/-- Makes text appear grey -/
+def bright_black := fg_ansi_16 90
+/-- Makes text appear grey -/
+def grey := bright_black
+/-- Makes text appear gray -/
+def gray := bright_black
+
+/-- Makes text appear bright red -/
+def bright_red := fg_ansi_16 91
+/-- Makes text appear bright green -/
+def bright_green := fg_ansi_16 92
+/-- Makes text appear bright yellow -/
+def bright_yellow := fg_ansi_16 93
+/-- Makes text appear bright blue -/
+def bright_blue := fg_ansi_16 94
+/-- Makes text appear bright magenta -/
+def bright_magenta := fg_ansi_16 95
+/-- Makes text appear bright cyan -/
+def bright_cyan := fg_ansi_16 96
+/-- Makes text appear bright white -/
+def bright_white := fg_ansi_16 97
+
+
+
 def bg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with bg := some code, colorLevel := colorLevel.ansi16 }
 /-- Makes background appear black -/
@@ -65,6 +89,28 @@ def bg_magenta := bg_ansi_16 45
 def bg_cyan := bg_ansi_16 46
 /-- Makes background appear white -/
 def bg_white := bg_ansi_16 47
+
+/-- Makes background appear grey -/
+def bg_bright_black := bg_ansi_16 100
+/-- Makes background appear grey -/
+def bg_grey := bg_bright_black
+/-- Makes background appear gray -/
+def bg_gray := bg_bright_black
+
+/-- Makes background appear bright red -/
+def bg_bright_red := bg_ansi_16 101
+/-- Makes background appear bright green -/
+def bg_bright_green := bg_ansi_16 102
+/-- Makes background appear bright yellow -/
+def bg_bright_yellow := bg_ansi_16 103
+/-- Makes background appear bright blue -/
+def bg_bright_blue := bg_ansi_16 104
+/-- Makes background appear bright magenta -/
+def bg_bright_magenta := bg_ansi_16 105
+/-- Makes background appear bright cyan -/
+def bg_bright_cyan := bg_ansi_16 106
+/-- Makes background appear bright white -/
+def bg_bright_white := bg_ansi_16 107
 
 /-- Set foreground color using Ansi256 codes -/
 def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some color, colorLevel := colorLevel.ansi256 }
