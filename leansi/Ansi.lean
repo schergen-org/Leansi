@@ -8,24 +8,17 @@ def reset : String := esc ++ "0m"
 def getColorCodes (s : Style) : List String :=
   let codes : List String := []
 
-  match s.colorLevel with
-  | colorLevel.none => codes
-  | colorLevel.ansi16 =>
-    let codes := match s.fg with
-      | some n => codes ++ [toString n]
-      | none => codes
-    let codes := match s.bg with
-      | some n => codes ++ [toString n]
-      | none => codes
-    codes
-  | colorLevel.ansi256 =>
-    let codes := match s.fg with
-      | some n => codes ++ ["38;5;" ++ toString n]
-      | none => codes
-    let codes := match s.bg with
-      | some n => codes ++ ["48;5;" ++ toString n]
-      | none => codes
-    codes
+  let codes := match s.fg with
+    | ColorLevel.ansi16 n => codes ++ [toString n]
+    | ColorLevel.ansi256 n => codes ++ ["38;5;" ++ toString n]
+    | ColorLevel.truecolor (r, g, b) => codes ++ ["38;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
+    | none => codes
+  let codes := match s.bg with
+    | ColorLevel.ansi16 n => codes ++ [toString n]
+    | ColorLevel.ansi256 n => codes ++ ["48;5;" ++ toString n]
+    | ColorLevel.truecolor (r, g, b) => codes ++ ["48;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
+    | none => codes
+  codes
 
 def styleToSgr (s : Style) : List String :=
   let codes := getColorCodes s

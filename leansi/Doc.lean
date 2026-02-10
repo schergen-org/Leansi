@@ -29,7 +29,7 @@ def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s
 
 -- Ansi 16 colors
 def fg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
-  doc.ann { s with fg := some code, colorLevel := colorLevel.ansi16 }
+  doc.ann { s with fg := some (ColorLevel.ansi16 code) }
 /-- Makes text appear black -/
 def black := fg_ansi_16 30
 /-- Makes text appear red -/
@@ -72,7 +72,7 @@ def bright_white := fg_ansi_16 97
 
 
 def bg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
-  doc.ann { s with bg := some code, colorLevel := colorLevel.ansi16 }
+  doc.ann { s with bg := some (ColorLevel.ansi16 code) }
 /-- Makes background appear black -/
 def bg_black := bg_ansi_16 40
 /-- Makes background appear red -/
@@ -113,9 +113,20 @@ def bg_bright_cyan := bg_ansi_16 106
 def bg_bright_white := bg_ansi_16 107
 
 /-- Set foreground color using Ansi256 codes -/
-def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some color, colorLevel := colorLevel.ansi256 }
+def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some (ColorLevel.ansi256 color) }
+
 /-- Set background color using Ansi256 codes -/
-def bg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some color, colorLevel := colorLevel.ansi256 }
+def bg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some (ColorLevel.ansi256 color) }
+
+/-- Set foreground color using rgb -/
+def fg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some (ColorLevel.truecolor (r, g, b)) }
+
+/-- Set background color using rgb -/
+def bg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some (ColorLevel.truecolor (r, g, b)) }
 
 end Doc
 
