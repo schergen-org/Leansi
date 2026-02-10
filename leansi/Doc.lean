@@ -28,39 +28,105 @@ def hidden (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with h
 def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with strikethrough := true }
 
 -- Ansi 16 colors
+def fg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some (ColorLevel.ansi16 code) }
 /-- Makes text appear black -/
-def black (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 30 }
+def black := fg_ansi_16 30
 /-- Makes text appear red -/
-def red (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 31 }
+def red := fg_ansi_16 31
 /-- Makes text appear green -/
-def green (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 32 }
+def green := fg_ansi_16 32
 /-- Makes text appear yellow -/
-def yellow (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 33 }
+def yellow := fg_ansi_16 33
 /-- Makes text appear blue -/
-def blue (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 34 }
+def blue := fg_ansi_16 34
 /-- Makes text appear magenta -/
-def magenta (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with fg := some 35 }
+def magenta := fg_ansi_16 35
 /-- Makes text appear cyan -/
-def cyan (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some 36 }
+def cyan := fg_ansi_16 36
 /-- Makes text appear white -/
-def white (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with fg := some 37 }
+def white := fg_ansi_16 37
 
+/-- Makes text appear grey -/
+def bright_black := fg_ansi_16 90
+/-- Makes text appear grey -/
+def grey := bright_black
+/-- Makes text appear gray -/
+def gray := bright_black
+
+/-- Makes text appear bright red -/
+def bright_red := fg_ansi_16 91
+/-- Makes text appear bright green -/
+def bright_green := fg_ansi_16 92
+/-- Makes text appear bright yellow -/
+def bright_yellow := fg_ansi_16 93
+/-- Makes text appear bright blue -/
+def bright_blue := fg_ansi_16 94
+/-- Makes text appear bright magenta -/
+def bright_magenta := fg_ansi_16 95
+/-- Makes text appear bright cyan -/
+def bright_cyan := fg_ansi_16 96
+/-- Makes text appear bright white -/
+def bright_white := fg_ansi_16 97
+
+
+
+def bg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some (ColorLevel.ansi16 code) }
 /-- Makes background appear black -/
-def bg_black (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 40 }
+def bg_black := bg_ansi_16 40
 /-- Makes background appear red -/
-def bg_red (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 41 }
+def bg_red := bg_ansi_16 41
 /-- Makes background appear green -/
-def bg_green (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 42 }
+def bg_green := bg_ansi_16 42
 /-- Makes background appear yellow -/
-def bg_yellow (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 43 }
+def bg_yellow := bg_ansi_16 43
 /-- Makes background appear blue -/
-def bg_blue (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 44 }
+def bg_blue := bg_ansi_16 44
 /-- Makes background appear magenta -/
-def bg_magenta (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann {s with bg := some 45 }
+def bg_magenta := bg_ansi_16 45
 /-- Makes background appear cyan -/
-def bg_cyan (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some 46 }
+def bg_cyan := bg_ansi_16 46
 /-- Makes background appear white -/
-def bg_white (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bg := some 47 }
+def bg_white := bg_ansi_16 47
+
+/-- Makes background appear grey -/
+def bg_bright_black := bg_ansi_16 100
+/-- Makes background appear grey -/
+def bg_grey := bg_bright_black
+/-- Makes background appear gray -/
+def bg_gray := bg_bright_black
+
+/-- Makes background appear bright red -/
+def bg_bright_red := bg_ansi_16 101
+/-- Makes background appear bright green -/
+def bg_bright_green := bg_ansi_16 102
+/-- Makes background appear bright yellow -/
+def bg_bright_yellow := bg_ansi_16 103
+/-- Makes background appear bright blue -/
+def bg_bright_blue := bg_ansi_16 104
+/-- Makes background appear bright magenta -/
+def bg_bright_magenta := bg_ansi_16 105
+/-- Makes background appear bright cyan -/
+def bg_bright_cyan := bg_ansi_16 106
+/-- Makes background appear bright white -/
+def bg_bright_white := bg_ansi_16 107
+
+/-- Set foreground color using Ansi256 codes -/
+def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some (ColorLevel.ansi256 color) }
+
+/-- Set background color using Ansi256 codes -/
+def bg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some (ColorLevel.ansi256 color) }
+
+/-- Set foreground color using rgb -/
+def fg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with fg := some (ColorLevel.truecolor (r, g, b)) }
+
+/-- Set background color using rgb -/
+def bg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann { s with bg := some (ColorLevel.truecolor (r, g, b)) }
 
 end Doc
 

@@ -5,17 +5,23 @@ namespace leansi
 def esc : String := "\x1b["
 def reset : String := esc ++ "0m"
 
-def styleToSgr (s : Style) : List String :=
+def getColorCodes (s : Style) : List String :=
   let codes : List String := []
 
   let codes := match s.fg with
-    | some n => codes ++ [toString n]
+    | ColorLevel.ansi16 n => codes ++ [toString n]
+    | ColorLevel.ansi256 n => codes ++ ["38;5;" ++ toString n]
+    | ColorLevel.truecolor (r, g, b) => codes ++ ["38;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
     | none => codes
-
   let codes := match s.bg with
-    | some n => codes ++ [toString n]
+    | ColorLevel.ansi16 n => codes ++ [toString n]
+    | ColorLevel.ansi256 n => codes ++ ["48;5;" ++ toString n]
+    | ColorLevel.truecolor (r, g, b) => codes ++ ["48;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
     | none => codes
+  codes
 
+def styleToSgr (s : Style) : List String :=
+  let codes := getColorCodes s
 
   let codes := if s.bold then codes ++ ["1"] else codes
   let codes := if s.dim then codes ++ ["2"] else codes
