@@ -12,12 +12,12 @@ def getColorCodes (s : Style) : List String :=
     | ColorLevel.ansi16 n => codes ++ [toString n]
     | ColorLevel.ansi256 n => codes ++ ["38;5;" ++ toString n]
     | ColorLevel.truecolor (r, g, b) => codes ++ ["38;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
-    | none => codes
+    | ColorLevel.none | none => codes
   let codes := match s.bg with
     | ColorLevel.ansi16 n => codes ++ [toString (n + 10)]
     | ColorLevel.ansi256 n => codes ++ ["48;5;" ++ toString n]
     | ColorLevel.truecolor (r, g, b) => codes ++ ["48;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
-    | none => codes
+    | ColorLevel.none | none => codes
   codes
 
 def styleToSgr (s : Style) : List String :=

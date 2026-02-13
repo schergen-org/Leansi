@@ -1,6 +1,7 @@
 namespace leansi
 
 inductive ColorLevel where
+  | none
   | ansi16 : Nat → ColorLevel
   | ansi256 : Nat → ColorLevel
   | truecolor : Nat × Nat × Nat → ColorLevel
