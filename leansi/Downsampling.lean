@@ -1,4 +1,4 @@
-import Leansi.Style
+import leansi.Style
 
 namespace leansi
 
