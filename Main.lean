@@ -1,6 +1,7 @@
 import leansi.Doc
 import leansi.Style
 import leansi.Render
+import leansi.Terminal
 
 open leansi
 open leansi.Doc
@@ -43,3 +44,8 @@ def main : IO Unit := do
   IO.println (Doc.text "RGB test 4" |> bg_rgb 0 0 255)
 
 -- Wo wird colorLevel gespeichert / wie darauf zugegriffen
+
+
+-- Terminal color level detection
+  let support ← detectColorSupport
+  IO.println s!"Detected color support: {support}"
