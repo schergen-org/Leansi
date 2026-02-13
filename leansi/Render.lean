@@ -49,12 +49,13 @@ def Doc.renderWithStyle {ann : Type} (toStyle : ann → Style) (colorSupport : C
 
 def render (doc : Doc Unit) : String := doc.render
 
-/-- Allow printing `Doc Style` as rendered content. -/
-instance : ToString (Doc Style) where
-  toString d := d.renderWithStyle id
+def println (d : Doc Style) : IO Unit := do
+  let level ← detectColorSupport
+  IO.println (d.renderWithStyle id level)
 
-/-- Allow printing `Doc Unit` (unannotated docs). -/
-instance : ToString (Doc Unit) where
-  toString d := d.render
+def print (d : Doc Style) : IO Unit := do
+  let level ← detectColorSupport
+  IO.print (d.renderWithStyle id level)
+
 
 end leansi
