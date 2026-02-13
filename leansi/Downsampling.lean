@@ -20,22 +20,22 @@ def trueColorToAnsi256 (r g b : Nat) : Nat :=
 -- hardcoded ANSI16 palette for downsampling. Colors may not be accurate for every terminal
 def ansi16Palette : List (Nat × (Nat × Nat × Nat)) :=
 [
-  (30, ⟨0,0,0⟩),
-  (31, ⟨128,0,0⟩),
-  (32, ⟨0,128,0⟩),
-  (33, ⟨128,128,0⟩),
-  (34, ⟨0,0,128⟩),
-  (35, ⟨128,0,128⟩),
-  (36, ⟨0,128,128⟩),
-  (37, ⟨192,192,192⟩),
-  (90, ⟨128,128,128⟩),
-  (91, ⟨255,0,0⟩),
-  (92, ⟨0,255,0⟩),
-  (93, ⟨255,255,0⟩),
-  (94, ⟨0,0,255⟩),
-  (95, ⟨255,0,255⟩),
-  (96, ⟨0,255,255⟩),
-  (97, ⟨255,255,255⟩)
+  (ansi16Color.black, ⟨0,0,0⟩),
+  (ansi16Color.red, ⟨128,0,0⟩),
+  (ansi16Color.green, ⟨0,128,0⟩),
+  (ansi16Color.yellow, ⟨128,128,0⟩),
+  (ansi16Color.blue, ⟨0,0,128⟩),
+  (ansi16Color.magenta, ⟨128,0,128⟩),
+  (ansi16Color.cyan, ⟨0,128,128⟩),
+  (ansi16Color.white, ⟨192,192,192⟩),
+  (ansi16Color.bright_black, ⟨128,128,128⟩),
+  (ansi16Color.bright_red, ⟨255,0,0⟩),
+  (ansi16Color.bright_green, ⟨0,255,0⟩),
+  (ansi16Color.bright_yellow, ⟨255,255,0⟩),
+  (ansi16Color.bright_blue, ⟨0,0,255⟩),
+  (ansi16Color.bright_magenta, ⟨255,0,255⟩),
+  (ansi16Color.bright_cyan, ⟨0,255,255⟩),
+  (ansi16Color.bright_white, ⟨255,255,255⟩)
 ]
 
 -- Get squared distance between two RGB colors
@@ -58,22 +58,22 @@ def trueColorToAnsi16 (r g b : Nat) : Nat :=
 def ansi256ToAnsi16 (n : Nat) : Nat :=
   if n < 16 then
     match n with
-    | 0  => 30
-    | 1  => 31
-    | 2  => 32
-    | 3  => 33
-    | 4  => 34
-    | 5  => 35
-    | 6  => 36
-    | 7  => 37
-    | 8  => 90
-    | 9  => 91
-    | 10 => 92
-    | 11 => 93
-    | 12 => 94
-    | 13 => 95
-    | 14 => 96
-    | _  => 97
+    | 0  => ansi16Color.black
+    | 1  => ansi16Color.red
+    | 2  => ansi16Color.green
+    | 3  => ansi16Color.yellow
+    | 4  => ansi16Color.blue
+    | 5  => ansi16Color.magenta
+    | 6  => ansi16Color.cyan
+    | 7  => ansi16Color.white
+    | 8  => ansi16Color.bright_black
+    | 9  => ansi16Color.bright_red
+    | 10 => ansi16Color.bright_green
+    | 11 => ansi16Color.bright_yellow
+    | 12 => ansi16Color.bright_blue
+    | 13 => ansi16Color.bright_magenta
+    | 14 => ansi16Color.bright_cyan
+    | _  => ansi16Color.bright_white
   else if n < 232 then
     -- 6×6×6 cube
     let n' := n - 16
