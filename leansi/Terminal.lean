@@ -16,7 +16,7 @@ instance : ToString ColorSupport where
   | .ansi256   => "ansi256"
   | .truecolor => "truecolor"
 
-initialize colorLevelRef : IO.Ref (Option ColorSupport) ← IO.mkRef none
+initialize colorSupportRef : IO.Ref (Option ColorSupport) ← IO.mkRef none
 
 def containsSub (s sub : String) : Bool :=
   (s.splitOn sub).length > 1
@@ -43,12 +43,12 @@ def detectColorSupport' : IO ColorSupport := do
   return .none
 
 def detectColorSupport : IO ColorSupport := do
-  let cached ← colorLevelRef.get
+  let cached ← colorSupportRef.get
   match cached with
   | some level => return level
   | none =>
     let level ← detectColorSupport'
-    colorLevelRef.set (some level)
+    colorSupportRef.set (some level)
     return level
 
 end leansi
