@@ -26,7 +26,7 @@ def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
 
 def getSupportedStyle (colorSupport : ColorSupport) (style : Style) : Style :=
   match colorSupport with
-  | ColorSupport.none => style
+  | ColorSupport.none => {} -- when the terminal has no colorsupport there is no style
   | _ =>
     let fg' := style.fg.map (convertColorLevel colorSupport)
     let bg' := style.bg.map (convertColorLevel colorSupport)
