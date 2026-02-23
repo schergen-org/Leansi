@@ -48,3 +48,9 @@ def main : IO Unit := do
 -- Terminal color level detection
   let support ← detectColorSupport
   IO.println s!"Detected color support: {support}"
+
+-- Terminal dimensions detection
+  let dims ← leansi.getTerminalDimensions
+  match dims with
+  | some (rows, cols) => IO.println s!"Terminal: {rows} rows, {cols} cols"
+  | none => IO.println "Failed to detect terminal dimensions"
