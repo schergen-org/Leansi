@@ -43,7 +43,6 @@ def main : IO Unit := do
   println (Doc.text "RGB test 3" |> bg_rgb 0 255 0)
   println (Doc.text "RGB test 4" |> bg_rgb 0 0 255)
 
--- Wo wird colorLevel gespeichert / wie darauf zugegriffen
   println (alignDoc 80 Alignment.left <| Doc.text "Dies ist ein längerer Beispieltext, der linksbündig ausgerichtet ist. Er sollte am rechten Rand mit Leerzeichen aufgefüllt werden, damit die Zeile genau 80 Zeichen breit ist.")
 
   IO.println ""
