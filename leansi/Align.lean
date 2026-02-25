@@ -64,7 +64,17 @@ def chunkString (n : Nat) (s : String) : List String :=
     String.ofList <|
       chars.drop (i * n) |>.take n
 
-def align (width : Nat) (align : Alignment) (s : String) : String :=
+def alignString (width : Nat) (align : Alignment) (s : String) : String :=
   let lines := chunkString width s
   let alignedLines := lines.map (alignLine width align)
   String.intercalate "\n" alignedLines
+
+
+def alignDoc {ann} (width : Nat) (alignment : Alignment) (doc : Doc ann) : Doc ann :=
+    match doc with
+    | Doc.text s => Doc.text (alignString width alignment s)
+    | Doc.ann a d => Doc.ann a (alignDoc width alignment d)
+    | Doc.empty => Doc.empty
+    | Doc.concat d1 d2 => Doc.concat (alignDoc width alignment d1) (alignDoc width alignment d2)
+
+end leansi
