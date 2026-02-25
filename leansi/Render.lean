@@ -24,16 +24,13 @@ def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
     | _ => ColorLevel.ansi16 n
   | other => other
 
-def getSupportedStyle (colorSupport : ColorSupport) (style : Style) : Style :=
+def renderStyled (colorSupport : ColorSupport) (style : Style) (text : String) : String :=
   match colorSupport with
-  | ColorSupport.none => {} -- when the terminal has no colorsupport there is no style
+  | ColorSupport.none => text -- when the terminal has no colorsupport there is no style
   | _ =>
     let fg' := style.fg.map (convertColorLevel colorSupport)
     let bg' := style.bg.map (convertColorLevel colorSupport)
-    {style with fg := fg', bg := bg'}
-
-def renderStyled (style : Style) (text : String) : String :=
-  styleToAnsi style ++ text ++ reset
+    styleToAnsi {style with fg := fg', bg := bg'} ++ text ++ reset
 
 def Doc.render {ann : Type} : Doc ann → String
   | Doc.empty => ""
@@ -45,7 +42,7 @@ def Doc.renderWithStyle {ann : Type} (toStyle : ann → Style) (colorSupport : C
   | Doc.empty => ""
   | Doc.text s => s
   | Doc.concat d1 d2 => d1.renderWithStyle toStyle colorSupport ++ d2.renderWithStyle toStyle colorSupport
-  | Doc.ann a d => (renderStyled (getSupportedStyle colorSupport (toStyle a))) (d.renderWithStyle toStyle colorSupport)
+  | Doc.ann a d => (renderStyled colorSupport (toStyle a)) (d.renderWithStyle toStyle colorSupport)
 
 def render (doc : Doc Unit) : String := doc.render
 
