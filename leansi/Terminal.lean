@@ -3,6 +3,9 @@ import Std
 
 namespace leansi
 
+
+
+-- Terminal color level detection
 inductive ColorSupport
 | none
 | ansi16
@@ -52,6 +55,10 @@ def detectColorSupport : IO ColorSupport := do
     colorSupportRef.set (some level)
     return level
 
+
+
+
+-- Terminal dimensions detection
 private def parseRowsCols (s : String) : Option (Nat × Nat) :=
   let ws :=
     s.trim
