@@ -50,13 +50,14 @@ def justifyFull (s : String) (targetLen : Nat) : String :=
     build words 0
 
 def alignLine (width : Nat) (align : Alignment) (lineStr : String) : String :=
-  let vLen := visualLength lineStr
+  let str := lineStr.trim
+  let vLen := visualLength str
   if vLen >= width then lineStr
   else match align with
-    | .left   => padRight lineStr width vLen
-    | .right  => padLeft lineStr width vLen
-    | .center => padCenter lineStr width vLen
-    | .full   => justifyFull lineStr width
+    | .left   => padRight str width vLen
+    | .right  => padLeft str width vLen
+    | .center => padCenter str width vLen
+    | .full   => justifyFull str width
 
 def chunkString (n : Nat) (s : String) : List String :=
   let chars := s.toList
