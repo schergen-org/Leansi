@@ -2,6 +2,7 @@ import leansi.Doc
 import leansi.Style
 import leansi.Render
 import leansi.Terminal
+import leansi.Align
 
 open leansi
 open leansi.Doc
@@ -42,8 +43,17 @@ def main : IO Unit := do
   println (Doc.text "RGB test 3" |> bg_rgb 0 255 0)
   println (Doc.text "RGB test 4" |> bg_rgb 0 0 255)
 
--- Wo wird colorLevel gespeichert / wie darauf zugegriffen
+  println (alignDoc 80 Alignment.left <| Doc.text "Dies ist ein längerer Beispieltext, der linksbündig ausgerichtet ist. Er sollte am rechten Rand mit Leerzeichen aufgefüllt werden, damit die Zeile genau 80 Zeichen breit ist.")
 
+  IO.println ""
+
+  println (alignDoc 80 Alignment.full <| Doc.text "Dies ist ein längerer Beispieltext, der im Blocksatz ausgerichtet ist. Er sollte so angepasst werden, dass die Wörter gleichmäßig über die gesamte Zeilenbreite verteilt sind, um eine saubere und professionelle Optik zu erzielen.")
+
+  IO.println ""
+
+  println (alignDoc 80 Alignment.center <| Doc.text "Dies ist ein längerer Beispieltext, der zentriert ausgerichtet ist. Er sollte so angepasst werden, dass die Wörter gleichmäßig über die gesamte Zeilenbreite verteilt sind, um eine saubere und professionelle Optik zu erzielen." |> blue |> bold)
+
+  IO.println ""
 
 -- Terminal color level detection
   let support ← detectColorSupport
