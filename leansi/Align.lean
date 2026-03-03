@@ -61,9 +61,9 @@ def alignLine (width : Nat) (align : Alignment) (lineStr : String) : String :=
 
 def chunkString (n : Nat) (s : String) : List String :=
   let chars := s.toList
-  (List.range ((chars.length / n) + 1)).map fun i =>
+  ((List.range ((chars.length / n) + 1)).map fun i =>
     String.ofList <|
-      chars.drop (i * n) |>.take n
+      chars.drop (i * n) |>.take n).filter (fun s => s != "")
 
 def alignString (width : Nat) (align : Alignment) (s : String) : String :=
   let lines := chunkString width s
