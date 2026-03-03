@@ -69,7 +69,7 @@ def main : IO Unit := do
   let featureList :=
     Layout.vcat
       [ Doc.text "Features" |> bold |> cyan
-      , Layout.hcatSep 2
+      , Layout.hcatSep 5
           [ Doc.text "- Styling"
           , Doc.text "- Align"
           , Doc.text "- Layout"
@@ -78,17 +78,18 @@ def main : IO Unit := do
   println featureList
 
   let tableHeader :=
-    Layout.columns [18] 3
+    Layout.columns [18]  3
       [ Doc.text "Package" |> bold
       , Doc.text "Component" |> bold
       , Doc.text "State" |> bold
       ]
+      [Alignment.left, Alignment.center, Alignment.right]
   let tableRow1 :=
     Layout.columns [18] 3
       [ Doc.text "leansi-core"
       , Doc.text "renderer"
       , Doc.text "ready" |> bright_green
-      ]
+      ] []
   let tableRow2 :=
     Layout.columns [18] 3
       [ Doc.text "leansi-ui"
