@@ -51,7 +51,7 @@ def columns' (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignmen
 def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) (hideOverflow : Bool := false) : Doc ann :=
   let defaultWidth := colWidth.getD (colWidth.length - 1) 10
 
-  let docsCut := docs.map (handleDocOverflow defaultWidth hideOverflow)
+  let docsCut := docs.mapIdx fun idx => (handleDocOverflow (colWidth.getD idx defaultWidth) hideOverflow)
 
   let maxRows := docsCut.map (·.length) |>.foldl (fun a b => if a > b then a else b) 0
 
