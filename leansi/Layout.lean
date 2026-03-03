@@ -30,8 +30,10 @@ def vcat (docs : List (Doc ann)) : Doc ann :=
   joinWith lineBreak docs
 
 /-- Build a simple row of fixed-width columns. -/
-def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) : Doc ann :=
-  let cols := docs.mapIdx fun idx => (alignDoc (colWidth.getD idx 2) Alignment.center)
+def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) : Doc ann :=
+  let defaultWidth := colWidth.getD (colWidth.length - 1) 10
+  let defaultAlign := Alignment.left
+  let cols := docs.mapIdx fun idx => (alignDoc (colWidth.getD idx defaultWidth) (alignments.getD idx defaultAlign))
   hcatSep gap cols
 
 /-- Align to current terminal width if dimensions can be detected. -/
