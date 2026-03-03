@@ -48,7 +48,7 @@ def main : IO Unit := do
 
   IO.println ""
 
-  println (alignDoc 80 Alignment.full <| Doc.text "Dies ist ein längerer Beispieltext, der im Blocksatz ausgerichtet ist. Er sollte so angepasst werden, dass die Wörter gleichmäßig über die gesamte Zeilenbreite verteilt sind, um eine saubere und professionelle Optik zu erzielen.")
+  println (Doc.text "Dies ist ein längerer Beispieltext, der im Blocksatz ausgerichtet ist. Er sollte so angepasst werden, dass die Wörter gleichmäßig über die gesamte Zeilenbreite verteilt sind, um eine saubere und professionelle Optik zu erzielen." |> alignDoc 80 Alignment.full)
 
   IO.println ""
 
@@ -124,6 +124,25 @@ def main : IO Unit := do
   println neofetchMock
 
   IO.println ""
+
+  let testRow := Layout.columns [3, 3, 3] 1
+    [ Doc.text "12345" |> red
+    , Doc.text "123" |> green
+    , Doc.text "123456789" |> blue
+    ]
+    [Alignment.center, Alignment.center, Alignment.center] false
+
+  let testRow2 := Layout.columns [3, 3, 3] 1
+    [ Doc.text "123" |> red
+    , Doc.empty |> green
+    , Doc.text "1234567" |> blue
+    ]
+    [Alignment.center, Alignment.center, Alignment.center] true
+
+  println testRow
+  println testRow
+
+  println testRow2
 
 -- Terminal color level detection
   let support ← detectColorSupport
