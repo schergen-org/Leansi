@@ -3,3 +3,5 @@
 
 <h1 align="center">lfetch</h1>
 <p align="center">A Lean4 library designed to improve the display of content on the terminal.</p><br>
+
+`Leansi` is a small Lean 4 library for prettier terminal output: configurable colors (ANSI16/ANSI256/RGB), layouting and alignment utilities, borders/boxes, and other formatting helpers for building clean, **readable CLI displays**.
