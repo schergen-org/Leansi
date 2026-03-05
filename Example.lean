@@ -25,9 +25,12 @@ def main : IO Unit := do
   --     [ Layout.columns [10, 20] 0 [Doc.text "Colors" |> bright_red, colors] [Alignment.center, Alignment.left] true
 
   --     ]
-
   -- println examples
 
+  let header :=
+    alignDoc 80 Alignment.center <| Doc.text "L E A N S I" |> bright_red |> bold
+  println header
+  println (Doc.text "\n")
 
 
   let colors :=
