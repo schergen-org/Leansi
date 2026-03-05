@@ -13,24 +13,15 @@
 <h1 align="center">Leansi</h1>
 <p align="center">A Lean4 library designed to improve the display of content on the terminal.</p><br>
 
-
-<img width="700" alt="Leansi-Examples" src="https://github.com/user-attachments/assets/8315ac1f-2411-4785-a4b3-dd34f3b3e7b7" align="right" />
+<p align="center">
+    <img width="700" alt="Leansi-Examples" src="https://github.com/user-attachments/assets/8315ac1f-2411-4785-a4b3-dd34f3b3e7b7" />
+</p>
 
 `Leansi` is a small Lean 4 library for prettier terminal output: configurable colors (ANSI16/ANSI256/RGB), layouting and alignment utilities, borders/boxes, and other formatting helpers for building clean, **readable CLI displays**.
 
 <br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+
+
 
 ## Installation
 
