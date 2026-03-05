@@ -114,7 +114,7 @@ def main : IO Unit := do
     Layout.vcat
       [ Layout.hcatSep 4 [Doc.text "   ____   " |> bright_cyan, infoRow "User" "marvin@leanbox"]
       , Layout.hcatSep 4 [Doc.text "  / __ \\  " |> bright_cyan, infoRow "OS" "LeanixOS 1.0 (Mock)"]
-      , Layout.hcatSep 4 [Doc.text " / /  \\ \\ " |> bright_cyan, infoRow "Host" "Terminal-Dev-15"]
+      , Layout.hcatSep 4 [Doc.text " / /  \\ \\" |> bright_cyan, infoRow "Host" "Terminal-Dev-15"]
       , Layout.hcatSep 4 [Doc.text "| |    | |" |> bright_cyan, infoRow "Kernel" "6.1.0-mock"]
       , Layout.hcatSep 4 [Doc.text "| |    | |" |> bright_cyan, infoRow "Uptime" "3 days, 7 hours"]
       , Layout.hcatSep 4 [Doc.text " \\ \\__/ / " |> bright_cyan, infoRow "Shell" "bash 5.2"]

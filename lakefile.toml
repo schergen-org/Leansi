@@ -5,6 +5,8 @@ defaultTargets = ["leansi"]
 [[lean_lib]]
 name = "leansi"
 
+# No production executable for the library itself.
+# Provide an optional example executable; it is not part of the default build.
 [[lean_exe]]
-name = "Leansi"
-root = "Main"
+name = "example"
+root = "Example"
