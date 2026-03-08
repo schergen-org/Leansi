@@ -100,16 +100,16 @@ def main : IO Unit := do
   println pbHeader
 
   -- Simple progress bar
-  println (Doc.text "Simple:    " ++ simpleProgressBar 20 0.75)
+  println (Doc.text "Simple:    " ++ simpleProgressBar 20 75)
 
   -- Low battery example (threshold → red)
-  println (Doc.text "Battery:   " ++ progressBar {} 0.15)
+  println (Doc.text "Battery:   " ++ progressBar {} 15)
 
   -- Medium (threshold → yellow)
-  println (Doc.text "Upload:    " ++ progressBar {} 0.50)
+  println (Doc.text "Upload:    " ++ progressBar {} 50)
 
   -- Full (threshold → green)
-  println (Doc.text "Download:  " ++ progressBar {} 1.0)
+  println (Doc.text "Download:  " ++ progressBar {} 100)
 
   -- Custom config: wider bar, no brackets, custom chars
   let customConfig : leansi.ProgressBarConfig := {
@@ -118,8 +118,8 @@ def main : IO Unit := do
     empty := '·'
     brackets := none
     thresholds := [
-      { upperBound := 0.5, color := ColorLevel.truecolor (255, 100, 100) },
-      { upperBound := 1.0, color := ColorLevel.truecolor (100, 255, 100) }
+      { upperBound := 50, color := ColorLevel.truecolor (255, 100, 100) },
+      { upperBound := 100, color := ColorLevel.truecolor (100, 255, 100) }
     ]
   }
-  println (Doc.text "Custom:    " ++ progressBar customConfig 0.65)
+  println (Doc.text "Custom:    " ++ progressBar customConfig 65)
