@@ -29,16 +29,77 @@ def hcatSep (gap : Nat) (docs : List (Doc ann)) : Doc ann :=
 def vcat (docs : List (Doc ann)) : Doc ann :=
   joinWith lineBreak docs
 
+private def concatDocs : Doc ann → Doc ann → Doc ann
+  | Doc.empty, d => d
+  | d, Doc.empty => d
+  | d1, d2 => Doc.concat d1 d2
+
+private def docVisualLength : Doc ann → Nat
+  | Doc.empty => 0
+  | Doc.text s => visualLength s
+  | Doc.ann _ d => docVisualLength d
+  | Doc.concat d1 d2 => docVisualLength d1 + docVisualLength d2
+
+private def takeDoc (n : Nat) : Doc ann → Doc ann
+  | Doc.empty => Doc.empty
+  | Doc.text s => Doc.text (s.take n)
+  | Doc.ann a d =>
+    let t := takeDoc n d
+    match t with
+    | Doc.empty => Doc.empty
+    | _ => Doc.ann a t
+  | Doc.concat d1 d2 =>
+    let l1 := docVisualLength d1
+    if n <= l1 then
+      takeDoc n d1
+    else
+      concatDocs (takeDoc l1 d1) (takeDoc (n - l1) d2)
+
+private def dropDoc (n : Nat) : Doc ann → Doc ann
+  | Doc.empty => Doc.empty
+  | Doc.text s => Doc.text (s.drop n)
+  | Doc.ann a d =>
+    let r := dropDoc n d
+    match r with
+    | Doc.empty => Doc.empty
+    | _ => Doc.ann a r
+  | Doc.concat d1 d2 =>
+    let l1 := docVisualLength d1
+    if n < l1 then
+      concatDocs (dropDoc n d1) d2
+    else
+      dropDoc (n - l1) d2
+
+private def wrapDocLine (width : Nat) (doc : Doc ann) : List (Doc ann) :=
+  let w := max 1 width
+  let len := docVisualLength doc
+  let chunkCount := max 1 ((len + w - 1) / w)
+  (List.range chunkCount).map fun i => takeDoc w (dropDoc (i * w) doc)
+
+private def appendLineLists (l1 l2 : List (Doc ann)) : List (Doc ann) :=
+  match l1.reverse, l2 with
+  | [], ys => ys
+  | xs, [] => xs.reverse
+  | last1 :: revInit, first2 :: tail2 =>
+    let init := revInit.reverse
+    let merged := concatDocs last1 first2
+    init ++ (merged :: tail2)
+
+/-- Split a document into logical lines by `\n` while preserving style structure. -/
+def splitDocLines : Doc ann → List (Doc ann)
+  | Doc.empty => [Doc.empty]
+  | Doc.text s => (s.splitOn "\n").map Doc.text
+  | Doc.ann a d => (splitDocLines d).map (Doc.ann a)
+  | Doc.concat d1 d2 => appendLineLists (splitDocLines d1) (splitDocLines d2)
 
 def handleDocOverflow (width : Nat) (hideOverflow : Bool) (doc : Doc ann) : List (Doc ann) :=
-  match doc with
-  | Doc.empty => [Doc.text ""]
-  | Doc.text s => if s.length <= width then [doc]
-    else
-      if hideOverflow then [Doc.text (s.take width)]
-      else chunkString width s |>.map Doc.text
-  | Doc.ann a d => (handleDocOverflow width hideOverflow d) |>.map (Doc.ann a)
-  | Doc.concat d1 d2 => handleDocOverflow width hideOverflow d1 ++ handleDocOverflow width hideOverflow d2
+  let w := max 1 width
+  ((splitDocLines doc).map fun line =>
+      let len := docVisualLength line
+      if len <= w then [line]
+      else
+        if hideOverflow then [takeDoc w line]
+        else wrapDocLine w line).foldr (· ++ ·) []
 
 def columns' (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) : Doc ann :=
   let defaultWidth := colWidth.getD (colWidth.length - 1) 10

@@ -69,12 +69,61 @@ def alignString (width : Nat) (align : Alignment) (s : String) : String :=
   let alignedLines := lines.map (alignLine width align)
   String.intercalate "\n" alignedLines
 
+/-- Merge adjacent text fragments so alignment can work on logical lines
+    instead of on each tiny concatenated text node. -/
+def coalesceText {ann} : Doc ann → Doc ann
+  | Doc.empty => Doc.empty
+  | Doc.text s => Doc.text s
+  | Doc.ann a d => Doc.ann a (coalesceText d)
+  | Doc.concat d1 d2 =>
+    let d1' := coalesceText d1
+    let d2' := coalesceText d2
+    match d1', d2' with
+    | Doc.empty, d => d
+    | d, Doc.empty => d
+    | Doc.text s1, Doc.text s2 => Doc.text (s1 ++ s2)
+    | d1'', d2'' => Doc.concat d1'' d2''
+
+private def docTextLength {ann} : Doc ann → Nat
+  | Doc.empty => 0
+  | Doc.text s => visualLength s
+  | Doc.ann _ d => docTextLength d
+  | Doc.concat d1 d2 => docTextLength d1 + docTextLength d2
+
+private def plainText {ann} : Doc ann → String
+  | Doc.empty => ""
+  | Doc.text s => s
+  | Doc.ann _ d => plainText d
+  | Doc.concat d1 d2 => plainText d1 ++ plainText d2
+
+private def prependSpaces {ann} (n : Nat) (doc : Doc ann) : Doc ann :=
+  if n = 0 then doc else Doc.text (whiteSpaceString n) ++ doc
+
+private def appendSpaces {ann} (doc : Doc ann) (n : Nat) : Doc ann :=
+  if n = 0 then doc else doc ++ Doc.text (whiteSpaceString n)
 
 def alignDoc {ann} (width : Nat) (alignment : Alignment) (doc : Doc ann) : Doc ann :=
-    match doc with
-    | Doc.text s => Doc.text (alignString width alignment s)
-    | Doc.ann a d => Doc.ann a (alignDoc width alignment d)
-    | Doc.empty => Doc.empty
-    | Doc.concat d1 d2 => Doc.concat (alignDoc width alignment d1) (alignDoc width alignment d2)
+  let doc' := coalesceText doc
+  let len := docTextLength doc'
+  if len > width then
+    -- Overflow is handled in Layout.handleDocOverflow; keep the original
+    -- structure here so we do not duplicate line breaks or lose styles.
+    doc'
+  else
+    match alignment with
+    | .left =>
+      appendSpaces doc' (width - len)
+    | .right =>
+      prependSpaces (width - len) doc'
+    | .center =>
+      let total := width - len
+      let leftPad := total / 2
+      let rightPad := total - leftPad
+      appendSpaces (prependSpaces leftPad doc') rightPad
+    | .full =>
+      match doc' with
+      | Doc.text s => Doc.text (justifyFull s.trim width)
+      | Doc.ann a d => Doc.ann a (Doc.text (justifyFull (plainText d).trim width))
+      | _ => Doc.text (justifyFull (plainText doc').trim width)
 
 end leansi
