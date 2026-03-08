@@ -7,9 +7,7 @@ namespace leansi
     The `upperBound` is the maximum percentage (0-100) for which this color applies.
     Thresholds should be given in ascending order of `upperBound`. -/
 structure ProgressThreshold where
-  /-- Upper bound (inclusive) for this threshold, e.g. 33 -/
   upperBound : Fin 101
-  /-- Color to use when the progress value falls within this threshold -/
   color : ColorLevel
 deriving Repr, Inhabited, BEq
 
@@ -29,7 +27,7 @@ structure ProgressBarConfig where
   defaultColor : ColorLevel := ColorLevel.ansi16 ansi16Color.green
   /-- Whether to show a percentage label (e.g. " 40%") after the bar -/
   showPercentage : Bool := true
-  /-- Optional bracket characters around the bar, e.g. `some ('[', ']')` -/
+  /-- Optional bracket characters around the bar -/
   brackets : Option (Char × Char) := some ('[', ']')
 deriving Repr, Inhabited, BEq
 
@@ -55,16 +53,13 @@ private def formatPercentage (value : Fin 101) : String :=
 end Progressbar
 
 open Progressbar in
-/-- Render a progress bar as a `Doc Style`.
-    `value` is a `Fin 101`, so it is always in the range 0..100. -/
+/-- Render a progress bar as a `Doc Style`. -/
 def progressBar (config : ProgressBarConfig := {}) (value : Fin 101) : Doc Style :=
   let filledCount := ((value.1 * config.width) / 100).min config.width
   let emptyCount  := config.width - filledCount
 
   let color := resolveColor config.thresholds config.defaultColor value
   let barStyle : Style := { fg := some color }
-
-  -- Build the bar segments
   let filledDoc := Doc.text (repeatChar config.filled filledCount) |>.ann barStyle
   let emptyDoc  := Doc.text (repeatChar config.empty emptyCount)
   let barDoc    := filledDoc ++ emptyDoc
@@ -81,7 +76,6 @@ def progressBar (config : ProgressBarConfig := {}) (value : Fin 101) : Doc Style
       barDoc
   barDoc
 
-/-- A simple progress bar with default configuration — just specify width and value. -/
 def simpleProgressBar (width : Nat := 20) (value : Fin 101) : Doc Style :=
   progressBar { width := width } value
 
