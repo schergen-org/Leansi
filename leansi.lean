@@ -3,3 +3,4 @@
 import leansi.Basic
 import leansi.Doc
 import leansi.Render
+import leansi.Progressbar
