@@ -42,7 +42,7 @@ private def docVisualLength : Doc ann → Nat
 
 private def takeDoc (n : Nat) : Doc ann → Doc ann
   | Doc.empty => Doc.empty
-  | Doc.text s => Doc.text (s.take n)
+  | Doc.text s => Doc.text (s.take n).toString
   | Doc.ann a d =>
     let t := takeDoc n d
     match t with
@@ -57,7 +57,7 @@ private def takeDoc (n : Nat) : Doc ann → Doc ann
 
 private def dropDoc (n : Nat) : Doc ann → Doc ann
   | Doc.empty => Doc.empty
-  | Doc.text s => Doc.text (s.drop n)
+  | Doc.text s => Doc.text (s.drop n).toString
   | Doc.ann a d =>
     let r := dropDoc n d
     match r with
