@@ -5,6 +5,9 @@ import leansi.Color.Downsampling
 
 namespace leansi
 
+/-- Lower a requested color to what the current terminal can actually display.
+The function preserves as much information as the terminal supports and removes
+color only when the terminal reports that no color output should be used. -/
 def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
   | ColorLevel.truecolor (r, g, b) =>
     match colorSupport with
@@ -23,6 +26,8 @@ def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
     | _ => ColorLevel.ansi16 n
   | other => other
 
+/-- Render text with a style after adapting colors to the terminal capabilities.
+If the terminal has no color support, the plain text is returned unchanged. -/
 def renderStyled (colorSupport : ColorSupport) (style : Style) (text : String) : String :=
   match colorSupport with
   | ColorSupport.none => text

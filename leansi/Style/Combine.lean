@@ -3,6 +3,9 @@ import leansi.Style.Types
 namespace leansi
 namespace Style
 
+/-- Combine two styles in the same way nested annotations behave.
+Newer colors override older ones, while boolean attributes accumulate so that an
+outer `bold` is not lost when an inner annotation changes only the color. -/
 def combine (s1 s2 : Style) : Style := {
   fg := s2.fg <|> s1.fg
   bg := s2.bg <|> s1.bg

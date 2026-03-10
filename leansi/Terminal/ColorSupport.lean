@@ -18,9 +18,14 @@ instance : ToString ColorSupport where
 
 initialize colorSupportRef : IO.Ref (Option ColorSupport) ← IO.mkRef none
 
+/-- Test whether `sub` occurs inside `s`.
+This keeps the capability detection code readable without introducing a heavier helper. -/
 def containsSub (s sub : String) : Bool :=
   (s.splitOn sub).length > 1
 
+/-- Infer terminal color capability from common environment variables.
+The heuristic gives precedence to explicit disablement and explicit truecolor hints
+before falling back to broader `TERM` categories. -/
 def detectColorSupport' : IO ColorSupport := do
   if (← IO.getEnv "NO_COLOR").isSome then
     return .none
@@ -42,6 +47,8 @@ def detectColorSupport' : IO ColorSupport := do
 
   return .none
 
+/-- Detect terminal color support once and cache the result for later renders.
+Rendering happens often, so repeated environment probing would be unnecessary work. -/
 def detectColorSupport : IO ColorSupport := do
   let cached ← colorSupportRef.get
   match cached with

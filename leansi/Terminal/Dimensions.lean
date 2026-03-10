@@ -2,6 +2,7 @@ import Std
 
 namespace leansi
 
+/-- Parse output of the form `"rows cols"` into terminal dimensions. -/
 private def parseRowsCols (s : String) : Option (Nat × Nat) :=
   let ws :=
     s.trimAscii.toString
@@ -14,6 +15,8 @@ private def parseRowsCols (s : String) : Option (Nat × Nat) :=
       | _ => none
   | _ => none
 
+/-- Run a platform-specific command and interpret its output as terminal dimensions.
+Failures are treated as missing information because terminal size detection is best-effort. -/
 private def runAndParse (cmd : String) (args : Array String) : IO (Option (Nat × Nat)) := do
   try
     let out ← IO.Process.output { cmd := cmd, args := args }

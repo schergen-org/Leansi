@@ -3,11 +3,15 @@ import leansi.Util
 
 namespace leansi
 
+/-- Concatenate two documents while removing neutral `empty` nodes.
+This keeps helper code from introducing unnecessary structure into the document tree. -/
 def concatDocs : Doc ann → Doc ann → Doc ann
   | Doc.empty, d => d
   | d, Doc.empty => d
   | d1, d2 => Doc.concat d1 d2
 
+/-- Compute the visible width of a document, ignoring annotations.
+Alignment and wrapping use this measure instead of the raw tree size. -/
 def docVisualLength : Doc ann → Nat
   | Doc.empty => 0
   | Doc.text s => visualLength s
@@ -29,12 +33,18 @@ def coalesceText : Doc ann → Doc ann
     | Doc.text s1, Doc.text s2 => Doc.text (s1 ++ s2)
     | d1'', d2'' => Doc.concat d1'' d2''
 
+/-- Remove all annotations and recover the document's plain textual content.
+This is useful for algorithms such as full justification that need access to the
+words themselves rather than the original tree shape. -/
 def plainText : Doc ann → String
   | Doc.empty => ""
   | Doc.text s => s
   | Doc.ann _ d => plainText d
   | Doc.concat d1 d2 => plainText d1 ++ plainText d2
 
+/-- Keep only the first `n` visible characters of a document.
+The function preserves annotation nodes whenever their remaining content is not empty,
+which allows later rendering to keep styling on the surviving prefix. -/
 def takeDoc (n : Nat) : Doc ann → Doc ann
   | Doc.empty => Doc.empty
   | Doc.text s => Doc.text (s.take n).toString
@@ -50,6 +60,9 @@ def takeDoc (n : Nat) : Doc ann → Doc ann
     else
       concatDocs (takeDoc l1 d1) (takeDoc (n - l1) d2)
 
+/-- Drop the first `n` visible characters of a document.
+Together with `takeDoc`, this lets layout code slice styled content without
+flattening it into a plain string first. -/
 def dropDoc (n : Nat) : Doc ann → Doc ann
   | Doc.empty => Doc.empty
   | Doc.text s => Doc.text (s.drop n).toString
@@ -65,12 +78,15 @@ def dropDoc (n : Nat) : Doc ann → Doc ann
     else
       dropDoc (n - l1) d2
 
+/-- Merge two lists of split lines that originated from concatenated documents.
+The last line from the left side and the first line from the right side belong to
+the same logical line unless an explicit newline separated them. -/
 def appendLineLists (l1 l2 : List (Doc ann)) : List (Doc ann) :=
-  match l1.reverse, l2 with
+  match l1.reverse, l2 with -- l1 gets reversed to access the last element
   | [], ys => ys
   | xs, [] => xs.reverse
   | last1 :: revInit, first2 :: tail2 =>
-    let init := revInit.reverse
+    let init := revInit.reverse -- reverse again to get the original order
     let merged := concatDocs last1 first2
     init ++ (merged :: tail2)
 

@@ -8,6 +8,9 @@ inductive Alignment where
   | center
   | full
 
+/-- Stretch a plain-text line to `targetLen` by redistributing spaces between words.
+This is a simple justification algorithm tailored to terminal output, not to
+high-quality typesetting. -/
 def justifyFull (s : String) (targetLen : Nat) : String :=
   let words := s.splitOn " "
   match words with
@@ -37,6 +40,10 @@ private def prependSpaces {ann} (n : Nat) (doc : Doc ann) : Doc ann :=
 private def appendSpaces {ann} (doc : Doc ann) (n : Nat) : Doc ann :=
   if n = 0 then doc else doc ++ Doc.text (whiteSpaceString n)
 
+/-- Align a document to a fixed width.
+Left, right, and center alignment preserve the original document structure and add
+padding around it. Full alignment works on the plain text because redistributing
+internal spaces changes the content itself. -/
 def alignDoc {ann} (width : Nat) (alignment : Alignment) (doc : Doc ann) : Doc ann :=
   let doc' := coalesceText doc
   let len := docVisualLength doc'
