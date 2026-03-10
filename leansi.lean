@@ -1,6 +1,6 @@
 -- This module serves as the root of the `leansi` library.
 -- Import modules here that should be built as part of the library.
-import leansi.Doc.Core
+import leansi.Doc.Type
 import leansi.Doc.Styling
 import leansi.Render.Color
 import leansi.Render.Doc
@@ -11,6 +11,6 @@ import leansi.Ansi.Encode
 import leansi.Terminal.ColorSupport
 import leansi.Terminal.Dimensions
 import leansi.Color.Downsampling
-import leansi.Align.Core
-import leansi.Layout.Core
+import leansi.Align.AlignCore
+import leansi.Layout.LayoutCore
 import leansi.Widgets.ProgressBar

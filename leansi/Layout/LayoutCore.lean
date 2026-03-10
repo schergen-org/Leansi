@@ -1,5 +1,5 @@
-import leansi.Doc.Core
-import leansi.Align.Core
+import leansi.Doc.Type
+import leansi.Align.AlignCore
 import leansi.Terminal.Dimensions
 
 namespace leansi

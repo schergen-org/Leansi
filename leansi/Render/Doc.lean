@@ -1,4 +1,4 @@
-import leansi.Doc.Core
+import leansi.Doc.Type
 import leansi.Render.Color
 
 namespace leansi
