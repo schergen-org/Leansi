@@ -109,14 +109,19 @@ def columns' (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignmen
   hcatSep gap alignedCols
 
 /-- Build a simple row of fixed-width columns. -/
-def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) (hideOverflow : Bool := false) : Doc ann :=
+def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) (hideOverflow : Bool := false) (useMinRows : Bool := false) : Doc ann :=
   let defaultWidth := colWidth.getD (colWidth.length - 1) 10
 
   let docsCut := docs.mapIdx fun idx => (handleDocOverflow (colWidth.getD idx defaultWidth) hideOverflow)
+  let rowCounts := docsCut.map (·.length)
 
-  let maxRows := docsCut.map (·.length) |>.foldl (fun a b => if a > b then a else b) 0
+  let maxRows := rowCounts.foldl (fun a b => if a > b then a else b) 0
+  let minRows := match rowCounts with
+    | [] => 0
+    | x :: xs => xs.foldl (fun a b => if a < b then a else b) x
+  let rowCount := if useMinRows then minRows else maxRows
 
-  let cols := (List.range maxRows).map fun idx => columns' colWidth gap (docsCut.map fun x => x.getD idx (Doc.text "")) alignments
+  let cols := (List.range rowCount).map fun idx => columns' colWidth gap (docsCut.map fun x => x.getD idx (Doc.text "")) alignments
   vcat cols
 
 /-- Align to current terminal width if dimensions can be detected. -/

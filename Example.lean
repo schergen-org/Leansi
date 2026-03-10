@@ -45,8 +45,8 @@ def main : IO Unit := do
   let examples :=
     Layout.vcat
       [ Layout.columns [10, 20] 0 [Doc.text "Colors" |> bright_red, colors] [Alignment.center, Alignment.left] true
-      , Layout.columns [10, 200] 0 [Doc.text "Styles" |> bright_red, styles] [Alignment.center, Alignment.left] true
-      , Layout.columns [10, 200] 0 [Doc.text "Align" |> bright_red, Layout.vcat [alignedText, alignedTextDemo] ] [Alignment.center, Alignment.left] true
+      , Layout.columns [10, 150] 0 [Doc.text "Styles" |> bright_red, styles] [Alignment.center, Alignment.left] true
+      , Layout.columns [10, 92] 0 [Doc.text "Align" |> bright_red, Layout.vcat [alignedText, alignedTextDemo] ] [Alignment.center, Alignment.left] true
       ]
   println examples
 
