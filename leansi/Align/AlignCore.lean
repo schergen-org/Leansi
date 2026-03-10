@@ -1,4 +1,4 @@
-import leansi.Doc
+import leansi.Doc.DocOps
 
 namespace leansi
 
@@ -8,14 +8,11 @@ inductive Alignment where
   | center
   | full
 
--- Gets visual length of string, currently uses String.length
-def visualLength (s : String) : Nat :=
-  s.length
-
-def whiteSpaceString (n : Nat) : String := String.ofList (List.replicate n ' ')
-
+/-- Stretch a plain-text line to `targetLen` by redistributing spaces between words.
+This is a simple justification algorithm tailored to terminal output, not to
+high-quality typesetting. -/
 def justifyFull (s : String) (targetLen : Nat) : String :=
-  let words := s.splitOn
+  let words := s.splitOn " "
   match words with
   | [] => ""
   | [w] => w ++ whiteSpaceString (targetLen - visualLength w)
@@ -37,42 +34,19 @@ def justifyFull (s : String) (targetLen : Nat) : String :=
 
     build words 0
 
-/-- Merge adjacent text fragments so alignment can work on logical lines
-    instead of on each tiny concatenated text node. -/
-def coalesceText {ann} : Doc ann → Doc ann
-  | Doc.empty => Doc.empty
-  | Doc.text s => Doc.text s
-  | Doc.ann a d => Doc.ann a (coalesceText d)
-  | Doc.concat d1 d2 =>
-    let d1' := coalesceText d1
-    let d2' := coalesceText d2
-    match d1', d2' with
-    | Doc.empty, d => d
-    | d, Doc.empty => d
-    | Doc.text s1, Doc.text s2 => Doc.text (s1 ++ s2)
-    | d1'', d2'' => Doc.concat d1'' d2''
-
-private def docTextLength {ann} : Doc ann → Nat
-  | Doc.empty => 0
-  | Doc.text s => visualLength s
-  | Doc.ann _ d => docTextLength d
-  | Doc.concat d1 d2 => docTextLength d1 + docTextLength d2
-
-private def plainText {ann} : Doc ann → String
-  | Doc.empty => ""
-  | Doc.text s => s
-  | Doc.ann _ d => plainText d
-  | Doc.concat d1 d2 => plainText d1 ++ plainText d2
-
 private def prependSpaces {ann} (n : Nat) (doc : Doc ann) : Doc ann :=
   if n = 0 then doc else Doc.text (whiteSpaceString n) ++ doc
 
 private def appendSpaces {ann} (doc : Doc ann) (n : Nat) : Doc ann :=
   if n = 0 then doc else doc ++ Doc.text (whiteSpaceString n)
 
+/-- Align a document to a fixed width.
+Left, right, and center alignment preserve the original document structure and add
+padding around it. Full alignment works on the plain text because redistributing
+internal spaces changes the content itself. -/
 def alignDoc {ann} (width : Nat) (alignment : Alignment) (doc : Doc ann) : Doc ann :=
   let doc' := coalesceText doc
-  let len := docTextLength doc'
+  let len := docVisualLength doc'
   match alignment with
   | .left =>
     appendSpaces doc' (width - len)

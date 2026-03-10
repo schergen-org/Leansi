@@ -1,10 +1,15 @@
-import leansi.Style
+import leansi.Style.Types
 
 namespace leansi
 
+/-- Prefix used by ANSI Control Sequence Introducer escape sequences. -/
 def esc : String := "\x1b["
+/-- ANSI reset sequence that clears all active attributes. -/
 def reset : String := esc ++ "0m"
 
+/-- Convert the color part of a style into SGR parameters.
+Text attributes are handled separately so callers can build the final sequence in
+a clear and predictable order. -/
 def getColorCodes (s : Style) : List String :=
   let codes : List String := []
 
@@ -20,6 +25,7 @@ def getColorCodes (s : Style) : List String :=
     | ColorLevel.none | none => codes
   codes
 
+/-- Convert a full style into the list of SGR parameters understood by ANSI terminals. -/
 def styleToSgr (s : Style) : List String :=
   let codes := getColorCodes s
 
@@ -34,14 +40,16 @@ def styleToSgr (s : Style) : List String :=
 
   codes
 
-/-- Build ANSI escape sequence -/
+/-- Build an ANSI escape sequence from raw SGR parameters.
+Returning the empty string for an empty parameter list lets callers skip styling
+without adding a separate conditional. -/
 def sgrSequence (codes : List String) : String :=
   if codes.isEmpty then
     ""
   else
     esc ++ String.intercalate ";" codes ++ "m"
 
-/-- Convert Style to ANSI escape sequence -/
+/-- Encode a `Style` as the concrete ANSI prefix emitted before styled text. -/
 def styleToAnsi (s : Style) : String :=
   sgrSequence (styleToSgr s)
 

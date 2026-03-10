@@ -1,5 +1,7 @@
 namespace leansi
 
+/-- A requested color independent of what the current terminal can actually display.
+Rendering may later downsample this information to ANSI 256, ANSI 16, or no color. -/
 inductive ColorLevel where
   | none
   | ansi16 : Nat → ColorLevel
@@ -7,6 +9,7 @@ inductive ColorLevel where
   | truecolor : Nat × Nat × Nat → ColorLevel
 deriving Repr, Inhabited, BEq
 
+/-- Named ANSI 16 foreground color codes used by the convenience styling helpers. -/
 structure Ansi16Color where
   black : Nat := 30
   red : Nat := 31
@@ -25,8 +28,12 @@ structure Ansi16Color where
   bright_cyan : Nat := 96
   bright_white : Nat := 97
 
+/-- Default ANSI 16 palette. -/
 def ansi16Color : Ansi16Color := {}
 
+/-- Terminal styling attributes attached to document fragments.
+Colors are optional so a style can override just the foreground or background
+while inheriting the remaining attributes from surrounding annotations. -/
 structure Style where
   fg : Option ColorLevel := none
   bg : Option ColorLevel := none
@@ -39,23 +46,5 @@ structure Style where
   hidden : Bool := false
   strikethrough : Bool := false
 deriving Repr, Inhabited, BEq
-
-namespace Style
-
--- Kombination von Styles
-def combine (s1 s2 : Style) : Style := {
-  fg := s2.fg <|> s1.fg
-  bg := s2.bg <|> s1.bg
-  bold := s1.bold || s2.bold
-  dim := s1.dim || s2.dim
-  underline := s1.underline || s2.underline
-  italic := s1.italic || s2.italic
-  blink := s1.blink || s2.blink
-  reverse := s1.reverse || s2.reverse
-  hidden := s1.hidden || s2.hidden
-  strikethrough := s1.strikethrough || s2.strikethrough
-}
-
-end Style
 
 end leansi

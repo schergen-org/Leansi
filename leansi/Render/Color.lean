@@ -1,11 +1,13 @@
-import leansi.Doc
-import leansi.Style
-import leansi.Ansi
-import leansi.Terminal
-import leansi.Downsampling
+import leansi.Style.Types
+import leansi.Ansi.Encode
+import leansi.Terminal.ColorSupport
+import leansi.Color.Downsampling
 
 namespace leansi
 
+/-- Lower a requested color to what the current terminal can actually display.
+The function preserves as much information as the terminal supports and removes
+color only when the terminal reports that no color output should be used. -/
 def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
   | ColorLevel.truecolor (r, g, b) =>
     match colorSupport with
@@ -24,35 +26,14 @@ def convertColorLevel (colorSupport : ColorSupport) : ColorLevel → ColorLevel
     | _ => ColorLevel.ansi16 n
   | other => other
 
+/-- Render text with a style after adapting colors to the terminal capabilities.
+If the terminal has no color support, the plain text is returned unchanged. -/
 def renderStyled (colorSupport : ColorSupport) (style : Style) (text : String) : String :=
   match colorSupport with
-  | ColorSupport.none => text -- when the terminal has no colorsupport there is no style
+  | ColorSupport.none => text
   | _ =>
     let fg' := style.fg.map (convertColorLevel colorSupport)
     let bg' := style.bg.map (convertColorLevel colorSupport)
     styleToAnsi {style with fg := fg', bg := bg'} ++ text ++ reset
-
-def Doc.render {ann : Type} : Doc ann → String
-  | Doc.empty => ""
-  | Doc.text s => s
-  | Doc.concat d1 d2 => d1.render ++ d2.render
-  | Doc.ann _ d => d.render
-
-def Doc.renderWithStyle {ann : Type} (toStyle : ann → Style) (colorSupport : ColorSupport) : Doc ann → String
-  | Doc.empty => ""
-  | Doc.text s => s
-  | Doc.concat d1 d2 => d1.renderWithStyle toStyle colorSupport ++ d2.renderWithStyle toStyle colorSupport
-  | Doc.ann a d => (renderStyled colorSupport (toStyle a)) (d.renderWithStyle toStyle colorSupport)
-
-def render (doc : Doc Unit) : String := doc.render
-
-def println (d : Doc Style) : IO Unit := do
-  let level ← detectColorSupport
-  IO.println (d.renderWithStyle id level)
-
-def print (d : Doc Style) : IO Unit := do
-  let level ← detectColorSupport
-  IO.print (d.renderWithStyle id level)
-
 
 end leansi

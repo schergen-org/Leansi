@@ -1,15 +1,8 @@
-import leansi.Style
+import leansi.Doc.Type
 
 namespace leansi
-
-inductive Doc (ann : Type) where
-| empty : Doc ann
-| text : String → Doc ann
-| concat : Doc ann → Doc ann → Doc ann
-| ann : ann → Doc ann → Doc ann
-deriving Repr, Inhabited, BEq
-
 namespace Doc
+
 /-- Makes text appear **bold** -/
 def bold (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with bold := true }
 /-- Makes text appear <u>underlined</u> -/
@@ -27,9 +20,12 @@ def hidden (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with h
 /-- Makes the text appear strikethrough -/
 def strikethrough (doc : Doc Style) (s : Style := {}) : Doc Style := doc.ann { s with strikethrough := true }
 
--- Ansi 16 colors
+/-- Apply an ANSI 16 foreground color code to a document.
+The optional base style lets callers update the foreground while keeping other
+style choices intact. -/
 def fg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with fg := some (ColorLevel.ansi16 code) }
+
 /-- Makes text appear black -/
 def black := fg_ansi_16 ansi16Color.black
 /-- Makes text appear red -/
@@ -69,10 +65,10 @@ def bright_cyan := fg_ansi_16 ansi16Color.bright_cyan
 /-- Makes text appear bright white -/
 def bright_white := fg_ansi_16 ansi16Color.bright_white
 
-
-
+/-- Apply an ANSI 16 background color code to a document. -/
 def bg_ansi_16 (code : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with bg := some (ColorLevel.ansi16 code) }
+
 /-- Makes background appear black -/
 def bg_black := bg_ansi_16 ansi16Color.black
 /-- Makes background appear red -/
@@ -112,26 +108,23 @@ def bg_bright_cyan := bg_ansi_16 ansi16Color.bright_cyan
 /-- Makes background appear bright white -/
 def bg_bright_white := bg_ansi_16 ansi16Color.bright_white
 
-/-- Set foreground color using Ansi256 codes -/
+/-- Set foreground color using ANSI 256 palette indices. -/
 def fg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with fg := some (ColorLevel.ansi256 color) }
 
-/-- Set background color using Ansi256 codes -/
+/-- Set background color using ANSI 256 palette indices. -/
 def bg_ansi_256 (color : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with bg := some (ColorLevel.ansi256 color) }
 
-/-- Set foreground color using rgb -/
+/-- Set foreground color using an RGB triple.
+The value is stored as truecolor and may be downsampled only when rendering to a
+terminal with weaker color support. -/
 def fg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with fg := some (ColorLevel.truecolor (r, g, b)) }
 
-/-- Set background color using rgb -/
+/-- Set background color using an RGB triple. -/
 def bg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann { s with bg := some (ColorLevel.truecolor (r, g, b)) }
 
 end Doc
-
--- Instance op append for Doc to use `doc ++ doc`
-instance {ann : Type} : Append (Doc ann) where
-  append := Doc.concat
-
 end leansi
