@@ -85,8 +85,8 @@ def alignDoc {ann} (width : Nat) (alignment : Alignment) (doc : Doc ann) : Doc a
     appendSpaces (prependSpaces leftPad doc') rightPad
   | .full =>
     match doc' with
-    | Doc.text s => Doc.text (justifyFull s.trim width)
-    | Doc.ann a d => Doc.ann a (Doc.text (justifyFull (plainText d).trim width))
-    | _ => Doc.text (justifyFull (plainText doc').trim width)
+    | Doc.text s => Doc.text (justifyFull s.trimAscii.toString width)
+    | Doc.ann a d => Doc.ann a (Doc.text (justifyFull (plainText d).trimAscii.toString width))
+    | _ => Doc.text (justifyFull (plainText doc').trimAscii.toString width)
 
 end leansi
