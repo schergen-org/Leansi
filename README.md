@@ -1,5 +1,9 @@
 [![Lean Action CI](https://github.com/schergen-org/Leansi/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/schergen-org/Leansi/actions/workflows/lean_action_ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+> [!NOTE]  
+> This library was created as part of the “Funktionale Programmierung in Lean” module as an examination requirement at the University of Applied Sciences Mittelhessen.
+
 <div align="center">
 <pre>
     __                                   _
