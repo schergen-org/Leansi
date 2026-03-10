@@ -1,5 +1,4 @@
 import leansi.Doc.Core
-import leansi.Style
 
 namespace leansi
 namespace Doc

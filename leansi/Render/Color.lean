@@ -1,6 +1,6 @@
-import leansi.Style
-import leansi.Ansi
-import leansi.Terminal
+import leansi.Style.Types
+import leansi.Ansi.Encode
+import leansi.Terminal.ColorSupport
 import leansi.Color.Downsampling
 
 namespace leansi

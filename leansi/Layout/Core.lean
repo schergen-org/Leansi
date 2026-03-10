@@ -1,6 +1,6 @@
 import leansi.Doc.Core
-import leansi.Align
-import leansi.Terminal
+import leansi.Align.Core
+import leansi.Terminal.Dimensions
 
 namespace leansi
 namespace Layout

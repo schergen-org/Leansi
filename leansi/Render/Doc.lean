@@ -1,5 +1,4 @@
 import leansi.Doc.Core
-import leansi.Style
 import leansi.Render.Color
 
 namespace leansi

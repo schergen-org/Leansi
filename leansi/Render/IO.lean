@@ -1,6 +1,6 @@
-import leansi.Doc
+import leansi.Doc.Core
 import leansi.Render.Doc
-import leansi.Terminal
+import leansi.Terminal.ColorSupport
 
 namespace leansi
 

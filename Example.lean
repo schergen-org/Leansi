@@ -1,10 +1,4 @@
-import leansi.Doc
-import leansi.Style
-import leansi.Render
-import leansi.Terminal
-import leansi.Align
-import leansi.Layout
-import leansi.Progressbar
+import leansi
 
 open leansi
 open leansi.Doc
