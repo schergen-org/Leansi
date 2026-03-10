@@ -2,36 +2,52 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <div align="center">
 <pre>
-    __                                   _ 
+    __                                   _
    / /   ___   ____ _   ____    _____   (_)
-  / /   / _ \ / __ `/  / __ \  / ___/  / / 
- / /___/  __// /_/ /  / / / / (__  )  / /  
-/_____/\___/ \__,_/  /_/ /_/ /____/  /_/   
+  / /   / _ \ / __ `/  / __ \  / ___/  / /
+ / /___/  __// /_/ /  / / / / (__  )  / /
+/_____/\___/ \__,_/  /_/ /_/ /____/  /_/
 </pre>
 </div>
 
 <h1 align="center">Leansi</h1>
-<p align="center">A Lean4 library designed to improve the display of content on the terminal.</p><br>
+<p align="center">A Lean 4 library for readable terminal output.</p><br>
 
 <p align="center">
     <img width="700" alt="Leansi-Examples" src="https://github.com/user-attachments/assets/8315ac1f-2411-4785-a4b3-dd34f3b3e7b7" />
 </p>
 
-`Leansi` is a small Lean 4 library for prettier terminal output: configurable colors (ANSI16/ANSI256/RGB), layouting and alignment utilities, borders/boxes, and other formatting helpers for building clean, **readable CLI displays**.
-
-<br>
-
-
+`Leansi` is a Lean 4 library for building terminal output from structured documents. It provides composable styling, color fallback (ANSI16/ANSI256/RGB), alignment, table-like layouts, terminal capability detection, and progress bars for CLI applications.
 
 ## Installation
 
-Add `Leansi` to your `lakefile.toml` dependencies (if this repo is a dependency in your setup), then build:
+This repository is pinned to:
+
+```text
+leanprover/lean4:v4.28.0
+```
+
+To build the library in this repository:
 
 ```bash
 lake build
 ```
 
-To run the included showcase example:
+To use `Leansi` from another Lean project, add it as a Lake dependency in `lakefile.toml`:
+
+```toml
+[[require]]
+name = "leansi"
+git = "git@github.com:schergen-org/Leansi.git"
+```
+
+Then build your project as usual:
+
+```bash
+lake build
+```
+
+The repository also contains an optional showcase executable:
 
 ```bash
 lake exe example
@@ -39,71 +55,104 @@ lake exe example
 
 ## Quick start
 
+The public entrypoint is the root module:
+
 ```lean
-import leansi.Doc
-import leansi.Style
-import leansi.Render
+import leansi
 
 open leansi
 open leansi.Doc
 
 def main : IO Unit := do
-  let msg := (Doc.text "Leansi demo" |> bold |> bright_cyan)
+  let msg : Doc Style := Doc.text "Leansi demo" |> bold |> bright_cyan
   println msg
 ```
 
-## How to use Leansi
+## Core concepts
 
 ### 1) Build text docs
 
-`Doc` is the core type. Compose text with `Doc.text`, `Doc.empty`, and `++`.
+`Doc ann` is the core document type. It keeps text structure separate from annotations so layout and rendering can happen later.
+
+Use `Doc.text`, `Doc.empty`, and `++` to build documents:
 
 ```lean
 let a := Doc.text "Hello"
 let b := Doc.text " world"
-let line := a ++ b
+let line : Doc Style := a ++ b
 println line
 ```
 
-### 2) Style text (ANSI styles + colors)
+### 2) Style text
 
-Apply style combinators directly on `Doc Style` values.
+Style combinators live in the `leansi.Doc` namespace and operate on `Doc Style` values.
 
 ```lean
 let styled :=
   (Doc.text "bold" |> bold) ++ Doc.text ", " ++
   (Doc.text "underline" |> underline) ++ Doc.text ", " ++
   (Doc.text "italic" |> italic)
+
 println styled
 ```
 
-Foreground/background color options:
-- ANSI16: `bright_red`, `bg_blue`, ...
-- ANSI256: `fg_ansi_256 n`, `bg_ansi_256 n`
-- RGB: `fg_rgb r g b`, `bg_rgb r g b`
+Available style attributes include:
+- `bold`
+- `dim`
+- `italic`
+- `underline`
+- `blink`
+- `reverse`
+- `hidden`
+- `strikethrough`
+
+Available color APIs include:
+- ANSI16 foreground/background helpers such as `bright_red`, `cyan`, `bg_blue`
+- ANSI256 via `fg_ansi_256 n` and `bg_ansi_256 n`
+- RGB via `fg_rgb r g b` and `bg_rgb r g b`
 
 ```lean
 println (Doc.text "RGB" |> fg_rgb 100 150 200)
 println (Doc.text "ANSI256" |> fg_ansi_256 54 |> bg_ansi_256 200)
 ```
 
-### 3) Auto-detect terminal color support
+### 3) Render or print docs
 
-`println`/`print` in `leansi.Render` automatically call `detectColorSupport` and render with fallback.
+For direct terminal output, use:
+- `println : Doc Style -> IO Unit`
+- `print : Doc Style -> IO Unit`
+
+These functions automatically detect terminal color support before rendering.
+
+If you want a plain `String` instead of immediate IO, use the lower-level render API:
+- `Doc.render` ignores annotations
+- `Doc.renderWithStyle` renders a styled document with an explicit `ColorSupport`
+- `render` is a convenience wrapper for `Doc Unit`
+
+### 4) Auto-detect terminal color support
+
+`detectColorSupport` inspects common environment variables and caches the result.
+
+Current detection behavior:
+- `NO_COLOR` disables colors entirely
+- `TERM=dumb` disables colors entirely
+- `COLORTERM=truecolor` or `COLORTERM=24bit` enables truecolor
+- `TERM` containing `256color` enables ANSI256
+- any other non-empty `TERM` falls back to ANSI16
 
 ```lean
 let support ← detectColorSupport
 println (Doc.text s!"Detected color support: {support}" |> bright_cyan)
 ```
 
-If a terminal only supports fewer colors, Leansi downscales automatically:
-- truecolor -> ansi256/ansi16
+If the terminal supports fewer colors than requested, Leansi downscales automatically:
+- truecolor -> ansi256 or ansi16
 - ansi256 -> ansi16
-- any color -> none (if `NO_COLOR` or `TERM=dumb`)
+- any color -> none when colors are disabled
 
-### 4) Align text
+### 5) Align text
 
-Use `alignDoc` with `Alignment.left`, `right`, `center`, or `full` (justified).
+Use `alignDoc` with `Alignment.left`, `Alignment.right`, `Alignment.center`, or `Alignment.full`.
 
 ```lean
 let p := Doc.text "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
@@ -113,12 +162,15 @@ println (alignDoc 40 Alignment.right p)
 println (alignDoc 40 Alignment.full p)
 ```
 
-### 5) Build layouts (rows, columns, stacks)
+`Alignment.full` performs simple space redistribution for terminal-friendly justification.
 
-`Layout` provides simple composition primitives:
-- `Layout.hcat` / `Layout.hcatSep` for horizontal composition
+### 6) Build layouts
+
+`Layout` provides composition helpers for CLI UIs:
+- `Layout.hcat` for horizontal concatenation
+- `Layout.hcatSep` for horizontal concatenation with gaps
 - `Layout.vcat` for vertical stacking
-- `Layout.columns` for fixed-width table-like output with per-column alignment
+- `Layout.columns` for fixed-width, table-like output
 
 ```lean
 let row :=
@@ -128,49 +180,76 @@ let row :=
     , Doc.text "State" |> bold
     ]
     [Alignment.left, Alignment.center, Alignment.right]
+
 println row
 ```
 
 `Layout.columns` also handles overflow:
-- `hideOverflow = true`: crop cell content to width
-- `hideOverflow = false`: wrap into multiple lines
+- `hideOverflow = true` clips cell content to column width
+- `hideOverflow = false` wraps cell content into multiple lines
+- `useMinRows = true` truncates the final output to the shortest column
+- `useMinRows = false` keeps all rows up to the tallest column
 
-### 6) Fit output to real terminal width
+### 7) Fit output to terminal width
 
-Use `getTerminalDimensions` directly or `Layout.fitToTerminal` for terminal-aware alignment.
+Use `getTerminalDimensions` directly or `Layout.fitToTerminal` when you want terminal-aware alignment.
 
 ```lean
 let banner ← Layout.fitToTerminal Alignment.center (Doc.text "Simple Layout Demo" |> bold)
 println banner
 ```
 
-## Feature overview (with mini how-to)
+`getTerminalDimensions` is best-effort:
+- it first checks `LINES` and `COLUMNS`
+- on Linux/macOS it falls back to `stty size < /dev/tty`
+- on Windows it queries PowerShell
+- it can return `none` when no real TTY is attached, for example in CI or some IDE runs
 
-1. Styled docs with composable combinators
-   Use `Doc.text`, chain style functions via `|>`, combine with `++`.
-2. ANSI16, ANSI256, and truecolor (RGB)
-   Pick the needed API: `bright_green`, `fg_ansi_256 123`, or `fg_rgb 12 200 80`.
-3. Automatic color fallback/downsampling
-   Render via `println`/`print`; Leansi maps colors to terminal capabilities automatically.
-4. Runtime terminal capability detection
-   Call `detectColorSupport` and branch on `none | ansi16 | ansi256 | truecolor` if needed.
-5. Text alignment helpers
-   Use `alignDoc width alignment doc` for `left`, `center`, `right`, or `full` justification.
-6. Layout primitives for CLI UIs
-   Compose with `Layout.hcatSep`, `Layout.vcat`, and `Layout.columns` for table-like output.
-7. Overflow handling in columns
-   Control clipping vs wrapping using `Layout.columns ... hideOverflow`.
-8. Terminal dimension detection
-   Call `getTerminalDimensions` (or `Layout.fitToTerminal`) to adapt output width dynamically.
+### 8) Progress bars
+
+Leansi includes a ready-to-use progress bar widget:
+- `progressBar`
+- `simpleProgressBar`
+- `ProgressBarConfig`
+- `ProgressThreshold`
+
+```lean
+let customConfig : ProgressBarConfig := {
+  width := 22
+  filled := '▓'
+  empty := '·'
+  brackets := none
+  thresholds := [
+    { upperBound := 50, color := ColorLevel.truecolor (255, 100, 100) },
+    { upperBound := 100, color := ColorLevel.truecolor (100, 255, 100) }
+  ]
+}
+
+println (Doc.text "Upload: " ++ progressBar customConfig 65)
+```
+
+## Feature overview
+
+1. Structured `Doc` trees instead of raw string concatenation.
+2. Composable style helpers in `leansi.Doc`.
+3. ANSI16, ANSI256, and truecolor color requests.
+4. Automatic color fallback based on terminal support.
+5. Runtime terminal capability detection with caching.
+6. Alignment helpers for left, right, center, and full justification.
+7. Table-like column layout with wrapping or clipping.
+8. Best-effort terminal dimension detection.
+9. Progress bar widgets with configurable thresholds and visuals.
+10. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
 
-The project includes `Example.lean`, which demonstrates:
-- color capability showcase
-- full style showcase
-- multi-alignment text rendering
-- terminal color support and dimension detection
-- layout composition with `Layout.vcat`, `Layout.hcatSep`, and `Layout.columns`
+`Example.lean` demonstrates:
+- color support and downsampling
+- the available style combinators
+- left/center/right/full alignment
+- terminal color and dimension detection
+- layout composition with `Layout.vcat` and `Layout.columns`
+- default and customized progress bars
 
 Run it with:
 
