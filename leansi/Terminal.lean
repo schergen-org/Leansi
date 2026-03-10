@@ -61,7 +61,7 @@ def detectColorSupport : IO ColorSupport := do
 -- Terminal dimensions detection
 private def parseRowsCols (s : String) : Option (Nat × Nat) :=
   let ws :=
-    s.trim
+    s.trimAscii.toString
       |>.splitToList (fun c => c.isWhitespace)
       |>.filter (· ≠ "")
   match ws with

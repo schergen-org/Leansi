@@ -29,16 +29,77 @@ def hcatSep (gap : Nat) (docs : List (Doc ann)) : Doc ann :=
 def vcat (docs : List (Doc ann)) : Doc ann :=
   joinWith lineBreak docs
 
+private def concatDocs : Doc ann → Doc ann → Doc ann
+  | Doc.empty, d => d
+  | d, Doc.empty => d
+  | d1, d2 => Doc.concat d1 d2
+
+private def docVisualLength : Doc ann → Nat
+  | Doc.empty => 0
+  | Doc.text s => visualLength s
+  | Doc.ann _ d => docVisualLength d
+  | Doc.concat d1 d2 => docVisualLength d1 + docVisualLength d2
+
+private def takeDoc (n : Nat) : Doc ann → Doc ann
+  | Doc.empty => Doc.empty
+  | Doc.text s => Doc.text (s.take n).toString
+  | Doc.ann a d =>
+    let t := takeDoc n d
+    match t with
+    | Doc.empty => Doc.empty
+    | _ => Doc.ann a t
+  | Doc.concat d1 d2 =>
+    let l1 := docVisualLength d1
+    if n <= l1 then
+      takeDoc n d1
+    else
+      concatDocs (takeDoc l1 d1) (takeDoc (n - l1) d2)
+
+private def dropDoc (n : Nat) : Doc ann → Doc ann
+  | Doc.empty => Doc.empty
+  | Doc.text s => Doc.text (s.drop n).toString
+  | Doc.ann a d =>
+    let r := dropDoc n d
+    match r with
+    | Doc.empty => Doc.empty
+    | _ => Doc.ann a r
+  | Doc.concat d1 d2 =>
+    let l1 := docVisualLength d1
+    if n < l1 then
+      concatDocs (dropDoc n d1) d2
+    else
+      dropDoc (n - l1) d2
+
+private def wrapDocLine (width : Nat) (doc : Doc ann) : List (Doc ann) :=
+  let w := max 1 width
+  let len := docVisualLength doc
+  let chunkCount := max 1 ((len + w - 1) / w)
+  (List.range chunkCount).map fun i => takeDoc w (dropDoc (i * w) doc)
+
+private def appendLineLists (l1 l2 : List (Doc ann)) : List (Doc ann) :=
+  match l1.reverse, l2 with
+  | [], ys => ys
+  | xs, [] => xs.reverse
+  | last1 :: revInit, first2 :: tail2 =>
+    let init := revInit.reverse
+    let merged := concatDocs last1 first2
+    init ++ (merged :: tail2)
+
+/-- Split a document into logical lines by `\n` while preserving style structure. -/
+def splitDocLines : Doc ann → List (Doc ann)
+  | Doc.empty => [Doc.empty]
+  | Doc.text s => (s.splitOn "\n").map Doc.text
+  | Doc.ann a d => (splitDocLines d).map (Doc.ann a)
+  | Doc.concat d1 d2 => appendLineLists (splitDocLines d1) (splitDocLines d2)
 
 def handleDocOverflow (width : Nat) (hideOverflow : Bool) (doc : Doc ann) : List (Doc ann) :=
-  match doc with
-  | Doc.empty => [Doc.text ""]
-  | Doc.text s => if s.length <= width then [doc]
-    else
-      if hideOverflow then [Doc.text (s.take width)]
-      else chunkString width s |>.map Doc.text
-  | Doc.ann a d => (handleDocOverflow width hideOverflow d) |>.map (Doc.ann a)
-  | Doc.concat d1 d2 => handleDocOverflow width hideOverflow d1 ++ handleDocOverflow width hideOverflow d2
+  let w := max 1 width
+  ((splitDocLines doc).map fun line =>
+      let len := docVisualLength line
+      if len <= w then [line]
+      else
+        if hideOverflow then [takeDoc w line]
+        else wrapDocLine w line).foldr (· ++ ·) []
 
 def columns' (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) : Doc ann :=
   let defaultWidth := colWidth.getD (colWidth.length - 1) 10
@@ -48,14 +109,19 @@ def columns' (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignmen
   hcatSep gap alignedCols
 
 /-- Build a simple row of fixed-width columns. -/
-def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) (hideOverflow : Bool := false) : Doc ann :=
+def columns (colWidth : List Nat) (gap : Nat) (docs : List (Doc ann)) (alignments : List Alignment := []) (hideOverflow : Bool := false) (useMinRows : Bool := false) : Doc ann :=
   let defaultWidth := colWidth.getD (colWidth.length - 1) 10
 
   let docsCut := docs.mapIdx fun idx => (handleDocOverflow (colWidth.getD idx defaultWidth) hideOverflow)
+  let rowCounts := docsCut.map (·.length)
 
-  let maxRows := docsCut.map (·.length) |>.foldl (fun a b => if a > b then a else b) 0
+  let maxRows := rowCounts.foldl (fun a b => if a > b then a else b) 0
+  let minRows := match rowCounts with
+    | [] => 0
+    | x :: xs => xs.foldl (fun a b => if a < b then a else b) x
+  let rowCount := if useMinRows then minRows else maxRows
 
-  let cols := (List.range maxRows).map fun idx => columns' colWidth gap (docsCut.map fun x => x.getD idx (Doc.text "")) alignments
+  let cols := (List.range rowCount).map fun idx => columns' colWidth gap (docsCut.map fun x => x.getD idx (Doc.text "")) alignments
   vcat cols
 
 /-- Align to current terminal width if dimensions can be detected. -/
