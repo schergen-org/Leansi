@@ -10,7 +10,6 @@ open leansi
 open leansi.Doc
 
 def main : IO Unit := do
--- Examples ab hier
   let colors :=
     Layout.vcat
      [ Layout.columns [1, 22] 1 [Doc.text "✓", Doc.text "ANSI16" |> bright_red]
@@ -20,16 +19,17 @@ def main : IO Unit := do
      , Layout.columns [1, 22] 1 [Doc.text "✓", Doc.text "Automatic Downsampling" |> bright_magenta]
      ]
 
+
   let styles :=
     (Doc.text "All ansi styles: ") ++ (Doc.text "bold" |> bold) ++ Doc.text ", " ++
     (Doc.text "dim" |> dim) ++ Doc.text ", " ++
     (Doc.text "italic" |> italic) ++ Doc.text ", " ++
     (Doc.text "underline" |> underline) ++ Doc.text ", " ++
-    (Doc.text "underline" |> underline) ++ Doc.text ", " ++
     (Doc.text "strikethrough" |> strikethrough) ++ Doc.text ", " ++
     (Doc.text "reverse" |> reverse) ++ Doc.text ", " ++
     (Doc.text "hidden" |> hidden) ++ Doc.text ", and even " ++
     (Doc.text "blink" |> blink) ++ Doc.text "."
+
 
   let alignedText := (Doc.text "Word wrap text. Justify ") ++ (Doc.text "left" |> bright_green) ++ Doc.text ", " ++ (Doc.text "center" |> bright_yellow) ++ Doc.text ", " ++ (Doc.text "right" |> bright_blue) ++ Doc.text ", or even " ++ (Doc.text "full" |> bright_red) ++ Doc.text "."
   let alignedTextDemo :=
@@ -42,58 +42,19 @@ def main : IO Unit := do
     [Alignment.left, Alignment.center, Alignment.right, Alignment.full] false
 
 
-  let examples :=
-    Layout.vcat
-      [ Layout.columns [10, 20] 0 [Doc.text "Colors" |> bright_red, colors] [Alignment.center, Alignment.left] true
-      , Layout.columns [10, 150] 0 [Doc.text "Styles" |> bright_red, styles] [Alignment.center, Alignment.left] true
-      , Layout.columns [10, 92] 0 [Doc.text "Align" |> bright_red, Layout.vcat [alignedText, alignedTextDemo] ] [Alignment.center, Alignment.left] true
-      ]
-  println examples
-
-  let header :=
-    alignDoc 80 Alignment.center <| Doc.text "L E A N S I" |> bright_red |> bold
-  println header
-  println (Doc.text "")
-
-
-
   let support ← detectColorSupport
   let supportText := (Doc.text "Detected color support: ") ++ (Doc.text s!"{support}" |> bold |> bright_cyan)
-  println supportText
-  println (Doc.text "")
-
 
 
   let dims ← leansi.getTerminalDimensions
-  match dims with
-  | some (rows, cols) => println (Doc.text (s!"Terminal-Dimensions: ") ++ (Doc.text s!"{rows}" |> bright_green) ++ (Doc.text " rows, ") ++ (Doc.text s!"{cols}" |> bright_blue) ++ (Doc.text " cols"))
-  | none => println (Doc.text "Failed to detect Terminal-Dimensions" |> bright_red)
-  println (Doc.text "")
+  let dimsResult := match dims with
+  | some (rows, cols) => ((Doc.text s!"{rows}" |> bright_green) ++ (Doc.text " rows, ") ++ (Doc.text s!"{cols}" |> bright_blue) ++ (Doc.text " cols"))
+  | none => (Doc.text "Failed to detect Terminal-Dimensions" |> bright_red)
 
-  let more := (Doc.text "+more! \t" |> bright_red |> bold) ++ (Doc.text "Progress bars, columns, lists, and more coming soon!")
-  println more
-
-  println (Doc.text "")
-
-  -- Progress bar examples
-  let pbHeader := Doc.text "Progress Bars:" |> bold |> bright_cyan
-  println pbHeader
-
-  -- Simple progress bar
-  println (Doc.text "Simple:    " ++ simpleProgressBar 20 75)
-
-  -- Low battery example (threshold → red)
-  println (Doc.text "Battery:   " ++ progressBar {} 15)
-
-  -- Medium (threshold → yellow)
-  println (Doc.text "Upload:    " ++ progressBar {} 50)
-
-  -- Full (threshold → green)
-  println (Doc.text "Download:  " ++ progressBar {} 100)
 
   -- Custom config: wider bar, no brackets, custom chars
   let customConfig : leansi.ProgressBarConfig := {
-    width := 30
+    width := 22
     filled := '▓'
     empty := '·'
     brackets := none
@@ -102,6 +63,43 @@ def main : IO Unit := do
       { upperBound := 100, color := ColorLevel.truecolor (100, 255, 100) }
     ]
   }
-  println (Doc.text "Custom:    " ++ progressBar customConfig 65)
+  let progressBars :=
+    Layout.vcat
+    [ Doc.text "Battery:   " ++ progressBar {} 15
+    , Doc.text "Upload:    " ++ progressBar {} 50
+    , Doc.text "Download:  " ++ progressBar {} 100
+    , Doc.text "Custom:    " ++ progressBar customConfig 65
+    ]
 
-  println (alignDoc 20 Alignment.right ((Doc.text "123" |> bright_green) ++ (Doc.text "456" |> bright_red)))
+
+  let layout :=
+    Layout.vcat
+     [ Layout.columns [1, 30] 1 [Doc.text "✓", Doc.text "Vertical Concatination" |> cyan]
+     , Layout.columns [1, 30] 1 [Doc.text "✓", Doc.text "Horizontal Concatination" |> bright_green]
+     , Layout.columns [1, 30] 1 [Doc.text "✓", Doc.text "Columns" |> yellow]
+     , Doc.empty
+     , Layout.columns [5, 50] 1 [Doc.text "Psst!" |> dim , Doc.text "These functions are used for all the examples" |> bright_blue |> dim]
+     ]
+
+
+  let examples :=
+    Layout.vcat
+      [ Layout.columns [105] 3 [Doc.text "L E A N S I" |> bright_red |> bold] [Alignment.center] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Colors" |> bright_red, colors] [Alignment.center, Alignment.left] true
+      , Doc.empty , Doc.empty
+      , Layout.columns [15, 100] 3 [Doc.text "Styles" |> bright_red, styles] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Align" |> bright_red, Layout.vcat [alignedText, Doc.empty, alignedTextDemo] ] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Terminal Info" |> bright_red, supportText] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Terminal\nDimensions" |> bright_red, dimsResult] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Progress Bars" |> bright_red, progressBars] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15,90] 3 [Doc.text "Layout" |> bright_red, layout] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "And More!" |> bright_red, Doc.text "This is just the beginning. The library is still in early development, and there are many more features and improvements to come. Stay tuned for updates!" |> bright_green] [Alignment.center, Alignment.left] false
+      ]
+  println examples
