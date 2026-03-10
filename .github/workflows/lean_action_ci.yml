@@ -13,5 +13,8 @@ jobs:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
       
-      - name: Run Main
-        run: lake env lean --run Main.lean
+      - name: Build Example
+        run: lake build example
+
+      - name: Run Example
+        run: lake env lean --run Example.lean

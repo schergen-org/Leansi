@@ -4,6 +4,7 @@ import leansi.Render
 import leansi.Terminal
 import leansi.Align
 import leansi.Layout
+import leansi.Progressbar
 
 open leansi
 open leansi.Doc
@@ -91,3 +92,34 @@ def main : IO Unit := do
 
   let more := (Doc.text "+more! \t" |> bright_red |> bold) ++ (Doc.text "Progress bars, columns, lists, and more coming soon!")
   println more
+
+  println (Doc.text "\n")
+
+  -- Progress bar examples
+  let pbHeader := Doc.text "Progress Bars:" |> bold |> bright_cyan
+  println pbHeader
+
+  -- Simple progress bar
+  println (Doc.text "Simple:    " ++ simpleProgressBar 20 75)
+
+  -- Low battery example (threshold → red)
+  println (Doc.text "Battery:   " ++ progressBar {} 15)
+
+  -- Medium (threshold → yellow)
+  println (Doc.text "Upload:    " ++ progressBar {} 50)
+
+  -- Full (threshold → green)
+  println (Doc.text "Download:  " ++ progressBar {} 100)
+
+  -- Custom config: wider bar, no brackets, custom chars
+  let customConfig : leansi.ProgressBarConfig := {
+    width := 30
+    filled := '▓'
+    empty := '·'
+    brackets := none
+    thresholds := [
+      { upperBound := 50, color := ColorLevel.truecolor (255, 100, 100) },
+      { upperBound := 100, color := ColorLevel.truecolor (100, 255, 100) }
+    ]
+  }
+  println (Doc.text "Custom:    " ++ progressBar customConfig 65)
