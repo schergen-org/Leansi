@@ -65,6 +65,32 @@ def main : IO Unit := do
     , Doc.text "Custom:    " ++ progressBar customConfig 65
     ]
 
+  let projectTree : Tree :=
+    Tree.branch (Doc.text "leansi" |> bright_cyan |> bold)
+      [ Tree.branch (Doc.text "Doc")
+          [ Tree.leaf (Doc.text "Type.lean")
+          , Tree.leaf (Doc.text "DocOps.lean")
+          , Tree.leaf (Doc.text "Styling.lean")
+          ]
+      , Tree.branch (Doc.text "Widgets")
+          [ Tree.leaf (Doc.text "ProgressBar.lean" |> bright_green)
+          , Tree.leaf (Doc.text "Tree.lean" |> bright_green)
+          ]
+      , Tree.leaf (Doc.text "README.md" |> bright_yellow)
+      ]
+
+  let trees :=
+    Layout.vcat
+      [ tree projectTree {
+          connectorStyle := { fg := some (ColorLevel.truecolor (150, 180, 255)) }
+        }
+      , Doc.empty
+      , tree projectTree {
+          chars := asciiTreeChars
+          connectorStyle := { fg := some (ColorLevel.truecolor (255, 200, 140)) }
+        }
+      ]
+
 
   let layout :=
     Layout.vcat
@@ -91,6 +117,8 @@ def main : IO Unit := do
       , Layout.columns [15, 90] 3 [Doc.text "Terminal\nDimensions" |> bright_red, dimsResult] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15, 90] 3 [Doc.text "Progress Bars" |> bright_red, progressBars] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Tree" |> bright_red, trees] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15,90] 3 [Doc.text "Layout" |> bright_red, layout] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
