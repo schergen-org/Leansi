@@ -35,9 +35,13 @@ def roundedBoxChars : BoxChars := {
 
 /-- Configuration for rendering boxed documents. -/
 structure BoxConfig where
+  /-- Border glyph set used for top/bottom lines and side walls. -/
   chars : BoxChars := {}
+  /-- Style applied to border characters only. -/
   borderStyle : Style := {}
+  /-- Optional title drawn into the top border with one space on each side. -/
   title : Option (Doc Style) := none
+  /-- Placement of the title inside the available top border width. -/
   titleAlignment : Alignment := Alignment.center
   /-- Horizontal padding between the content and the border. -/
   paddingX : Nat := 1
@@ -48,26 +52,33 @@ structure BoxConfig where
 
 namespace Box
 
+/-- Build a string by repeating one character `n` times. -/
 private def repeatChar (c : Char) (n : Nat) : String :=
   String.ofList (List.replicate n c)
 
+/-- Render one styled border glyph. -/
 private def borderText (cfg : BoxConfig) (c : Char) : Doc Style :=
   (Doc.text (toString c)).ann cfg.borderStyle
 
+/-- Render a horizontal border segment with `n` repeated border characters. -/
 private def borderRun (cfg : BoxConfig) (n : Nat) : Doc Style :=
   (Doc.text (repeatChar cfg.chars.horizontal n)).ann cfg.borderStyle
 
+/-- Render an unstyled repeated character run (used for space padding). -/
 private def plainRun (c : Char) (n : Nat) : Doc Style :=
   Doc.text (repeatChar c n)
 
+/-- Compute the width of the widest logical content line. -/
 private def maxLineWidth (lines : List (Doc Style)) : Nat :=
   lines.foldl (fun acc line => max acc (docVisualLength line)) 0
 
+/-- Return title width including the surrounding spaces inserted in the border. -/
 private def titleLength (title : Option (Doc Style)) : Nat :=
   match title with
   | none => 0
   | some t => docVisualLength t + 2
 
+/-- Build the top border line, optionally embedding the title. -/
 private def topBorder (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
   let borderWidth := contentWidth + (cfg.paddingX * 2)
   let leftCorner := borderText cfg cfg.chars.topLeft
@@ -88,6 +99,7 @@ private def topBorder (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
     let rightFill := fill - leftFill
     leftCorner ++ borderRun cfg leftFill ++ titleDoc ++ borderRun cfg rightFill ++ rightCorner
 
+/-- Build one boxed content row with horizontal padding and width fill. -/
 private def contentLine (cfg : BoxConfig) (contentWidth : Nat) (line : Doc Style) : Doc Style :=
   let leftBorder := borderText cfg cfg.chars.vertical
   let rightBorder := borderText cfg cfg.chars.vertical
@@ -96,13 +108,16 @@ private def contentLine (cfg : BoxConfig) (contentWidth : Nat) (line : Doc Style
   let rightPadding := plainRun ' ' (contentWidth - lineLen)
   leftBorder ++ sidePadding ++ line ++ rightPadding ++ sidePadding ++ rightBorder
 
+/-- Build an empty boxed row used for vertical padding. -/
 private def emptyContentLine (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
   contentLine cfg contentWidth Doc.empty
 
+/-- Build the bottom border line. -/
 private def bottomBorder (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
   let borderWidth := contentWidth + (cfg.paddingX * 2)
   borderText cfg cfg.chars.bottomLeft ++ borderRun cfg borderWidth ++ borderText cfg cfg.chars.bottomRight
 
+/-- Vertically concatenate docs with newline separators. -/
 private def vcatDocs : List (Doc Style) → Doc Style
   | [] => Doc.empty
   | d :: ds => ds.foldl (fun acc x => acc ++ Doc.text "\n" ++ x) d
