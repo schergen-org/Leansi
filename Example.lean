@@ -75,7 +75,7 @@ def main : IO Unit := do
             ])
           {
             title := some (Doc.text "Unicode Box" |> bright_cyan |> bold)
-            borderStyle := { fg := some (ColorLevel.truecolor (120, 190, 255)) }
+            borderStyle := Style.fg_rgb 120 190 255
             titleAlignment := Alignment.center
             paddingX := 2
             paddingY := 1
@@ -85,7 +85,7 @@ def main : IO Unit := do
           {
             title := some (Doc.text "ASCII")
             chars := asciiBoxChars
-            borderStyle := { fg := some (ColorLevel.truecolor (255, 180, 120)) }
+            borderStyle := Style.fg_rgb 55 180 120
             titleAlignment := Alignment.left
           }
       ]
@@ -96,7 +96,7 @@ def main : IO Unit := do
           {
             title := some (Doc.text "Rounded")
             chars := roundedBoxChars
-            borderStyle := { fg := some (ColorLevel.truecolor (160, 220, 170)) }
+            borderStyle := Style.fg_rgb 160 220 170
             titleAlignment := Alignment.right
             paddingX := 2
             maxWidth := 40
@@ -104,9 +104,9 @@ def main : IO Unit := do
       , box
         (box
           (Doc.text "Boxes inside boxes!")
-          { title := some (Doc.text "Inner Box" |> bright_magenta) , chars := roundedBoxChars, borderStyle := {fg := some (ColorLevel.truecolor (255, 120, 255)) }}
+          { title := some (Doc.text "Inner Box" |> bright_magenta) , chars := roundedBoxChars, borderStyle := Style.fg_rgb 255 120 255}
         )
-        { title := some (Doc.text "Outer Box" |> bright_cyan), borderStyle := {fg := some (ColorLevel.truecolor (120, 255, 255))}, paddingX := 0, paddingY := 0 }
+        { title := some (Doc.text "Outer Box" |> bright_cyan), borderStyle := Style.fg_rgb 120 255 255, paddingX := 0, paddingY := 0 }
       ]
     ]
   let projectTree : Tree :=
@@ -137,11 +137,10 @@ def main : IO Unit := do
       ,
       Layout.columns [30] 0
         [ tree projectTree {
-            connectorStyle := { fg := some (ColorLevel.truecolor (150, 180, 255)) }
+            connectorStyle := Style.fg_rgb 150 180 255
           }
         , tree projectTree {
             chars := asciiTreeChars
-            connectorStyle := { fg := some (ColorLevel.truecolor (255, 200, 140))}
           }
         ]
     ]

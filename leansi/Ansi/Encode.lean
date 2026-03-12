@@ -13,12 +13,12 @@ a clear and predictable order. -/
 def getColorCodes (s : Style) : List String :=
   let codes : List String := []
 
-  let codes := match s.fg with
+  let codes := match s.foreground with
     | ColorLevel.ansi16 n => codes ++ [toString n]
     | ColorLevel.ansi256 n => codes ++ ["38;5;" ++ toString n]
     | ColorLevel.truecolor (r, g, b) => codes ++ ["38;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
     | ColorLevel.none | none => codes
-  let codes := match s.bg with
+  let codes := match s.background with
     | ColorLevel.ansi16 n => codes ++ [toString (n + 10)]
     | ColorLevel.ansi256 n => codes ++ ["48;5;" ++ toString n]
     | ColorLevel.truecolor (r, g, b) => codes ++ ["48;2;" ++ toString r ++ ";" ++ toString g ++ ";" ++ toString b]
@@ -29,14 +29,14 @@ def getColorCodes (s : Style) : List String :=
 def styleToSgr (s : Style) : List String :=
   let codes := getColorCodes s
 
-  let codes := if s.bold then codes ++ ["1"] else codes
-  let codes := if s.dim then codes ++ ["2"] else codes
-  let codes := if s.italic then codes ++ ["3"] else codes
-  let codes := if s.underline then codes ++ ["4"] else codes
-  let codes := if s.blink then codes ++ ["5"] else codes
-  let codes := if s.reverse then codes ++ ["7"] else codes
-  let codes := if s.hidden then codes ++ ["8"] else codes
-  let codes := if s.strikethrough then codes ++ ["9"] else codes
+  let codes := if s.isBold then codes ++ ["1"] else codes
+  let codes := if s.isDim then codes ++ ["2"] else codes
+  let codes := if s.isItalic then codes ++ ["3"] else codes
+  let codes := if s.isUnderline then codes ++ ["4"] else codes
+  let codes := if s.isBlink then codes ++ ["5"] else codes
+  let codes := if s.isReverse then codes ++ ["7"] else codes
+  let codes := if s.isHidden then codes ++ ["8"] else codes
+  let codes := if s.isStrikethrough then codes ++ ["9"] else codes
 
   codes
 
