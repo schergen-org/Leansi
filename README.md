@@ -18,7 +18,7 @@
 <p align="center">A Lean 4 library for readable terminal output.</p><br>
 
 <p align="center">
-    <img width="700" alt="Leansi-Examples" src="https://github.com/user-attachments/assets/1d140ecf-855a-4cac-b8e6-dc8cbcdb2a76" />
+    <img width="700"  alt="Leansi-Examples" src="https://github.com/user-attachments/assets/bf8e4a39-8493-4e38-aa09-5f36849ff422" />
 </p>
 
 `Leansi` is a Lean 4 library for building terminal output from structured documents. It provides composable styling, color fallback (ANSI16/ANSI256/RGB), alignment, table-like layouts, terminal capability detection, and progress bars for CLI applications.
