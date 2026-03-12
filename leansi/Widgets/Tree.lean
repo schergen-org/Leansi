@@ -1,4 +1,5 @@
 import leansi.Doc.DocOps
+import leansi.Layout.LayoutCore
 
 namespace leansi
 
@@ -53,11 +54,6 @@ structure TreeConfig where
 deriving Repr, Inhabited, BEq
 
 namespace TreeWidget
-
-/-- Join lines into one document with newline separators. -/
-private def vcatDocs : List (Doc Style) → Doc Style
-  | [] => Doc.empty
-  | d :: ds => ds.foldl (fun acc x => acc ++ Doc.text "\n" ++ x) d
 
 /-- Render a connector segment with `connectorStyle` applied. -/
 private def connectorText (cfg : TreeConfig) (s : String) : Doc Style :=
@@ -134,11 +130,11 @@ def tree (root : Tree) (cfg : TreeConfig := {}) : Doc Style :=
       renderNode cfg [] true true root
     else
       renderForestAsRoot cfg root.children
-  vcatDocs lines
+  Layout.vcat lines
 
 open TreeWidget in
 /-- Render multiple top-level trees as one forest document. -/
 def forest (roots : List Tree) (cfg : TreeConfig := {}) : Doc Style :=
-  vcatDocs (renderForest cfg [] roots)
+  Layout.vcat (renderForest cfg [] roots)
 
 end leansi
