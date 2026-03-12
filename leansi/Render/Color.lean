@@ -32,8 +32,8 @@ def renderStyled (colorSupport : ColorSupport) (style : Style) (text : String) :
   match colorSupport with
   | ColorSupport.none => text
   | _ =>
-    let fg' := style.fg.map (convertColorLevel colorSupport)
-    let bg' := style.bg.map (convertColorLevel colorSupport)
-    styleToAnsi {style with fg := fg', bg := bg'} ++ text ++ reset
+    let fg' := style.foreground.map (convertColorLevel colorSupport)
+    let bg' := style.background.map (convertColorLevel colorSupport)
+    styleToAnsi {style with foreground := fg', background := bg'} ++ text ++ reset
 
 end leansi

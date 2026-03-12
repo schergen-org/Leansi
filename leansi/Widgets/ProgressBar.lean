@@ -57,7 +57,7 @@ def progressBar (config : ProgressBarConfig := {}) (value : Fin 101) : Doc Style
   let emptyCount := config.width - filledCount
 
   let color := resolveColor config.thresholds config.defaultColor value
-  let barStyle : Style := { fg := some color }
+  let barStyle : Style := { foreground := some color }
   let filledDoc := Doc.text (repeatChar config.filled filledCount) |>.ann barStyle
   let emptyDoc := Doc.text (repeatChar config.empty emptyCount)
   let barDoc := filledDoc ++ emptyDoc
