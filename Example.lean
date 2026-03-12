@@ -67,39 +67,47 @@ def main : IO Unit := do
 
   let boxedDocs :=
     Layout.vcat
-    [ box
-        (Layout.vcat
-          [ Doc.text "Leansi can draw boxes around docs."
-          , Doc.text "Title placement is configurable."
-          ])
-        {
-          title := some (Doc.text "Unicode Box" |> bright_cyan |> bold)
-          borderStyle := { fg := some (ColorLevel.truecolor (120, 190, 255)) }
-          titleAlignment := Alignment.center
-          paddingX := 2
-          paddingY := 1
-        }
+    [ Layout.columns [40] 3
+      [ box
+          (Layout.vcat
+            [ Doc.text "Leansi can draw boxes around docs."
+            , Doc.text "Title placement is configurable."
+            ])
+          {
+            title := some (Doc.text "Unicode Box" |> bright_cyan |> bold)
+            borderStyle := { fg := some (ColorLevel.truecolor (120, 190, 255)) }
+            titleAlignment := Alignment.center
+            paddingX := 2
+            paddingY := 1
+          }
+      , box
+          (Doc.text "ASCII fallback works as well.\nHas to be manually enabled.\nRetro!")
+          {
+            title := some (Doc.text "ASCII")
+            chars := asciiBoxChars
+            borderStyle := { fg := some (ColorLevel.truecolor (255, 180, 120)) }
+            titleAlignment := Alignment.left
+          }
+      ]
     , Doc.empty
-    , box
-        (Doc.text "ASCII fallback works as well.")
-        {
-          title := some (Doc.text "ASCII")
-          chars := asciiBoxChars
-          borderStyle := { fg := some (ColorLevel.truecolor (255, 180, 120)) }
-          titleAlignment := Alignment.left
-        }
-    , Doc.empty
-    , box
-        (Doc.text "Rounded corners are available too.")
-        {
-          title := some (Doc.text "Rounded")
-          chars := roundedBoxChars
-          borderStyle := { fg := some (ColorLevel.truecolor (160, 220, 170)) }
-          titleAlignment := Alignment.right
-          paddingX := 2
-        }
+    , Layout.columns [40] 3
+      [ box
+          (Doc.text "Rounded corners are available too.\n...if your terminal supports them.")
+          {
+            title := some (Doc.text "Rounded")
+            chars := roundedBoxChars
+            borderStyle := { fg := some (ColorLevel.truecolor (160, 220, 170)) }
+            titleAlignment := Alignment.right
+            paddingX := 2
+          }
+      , box
+        (box
+          (Doc.text "Boxes inside boxes!")
+          { title := some (Doc.text "Inner Box" |> bright_magenta) , chars := roundedBoxChars, borderStyle := {fg := some (ColorLevel.truecolor (255, 120, 255)) }}
+        )
+        { title := some (Doc.text "Outer Box" |> bright_cyan), borderStyle := {fg := some (ColorLevel.truecolor (120, 255, 255))}, paddingX := 0, paddingY := 0 }
+      ]
     ]
-
 
   let layout :=
     Layout.vcat
