@@ -232,7 +232,27 @@ let customConfig : ProgressBarConfig := {
 println (Doc.text "Upload: " ++ progressBar customConfig 65)
 ```
 
-### 9) Render trees
+### 9) Draw boxes around docs
+
+Use `box` to wrap any `Doc Style` with a configurable border and optional title.
+
+```lean
+let panel :=
+  box
+    (Layout.vcat [Doc.text "First line", Doc.text "Second line"])
+    {
+      title := some (Doc.text "Info" |> bold |> bright_cyan)
+      titleAlignment := Alignment.center
+      borderStyle := { fg := some (ColorLevel.truecolor (120, 190, 255)) }
+      paddingX := 2
+      paddingY := 1
+    }
+
+println panel
+```
+
+You can switch presets via `chars := asciiBoxChars` or `chars := roundedBoxChars`.
+### 10) Render trees
 
 Use `Tree` + `tree` for hierarchical output with terminal-friendly branch connectors.
 
@@ -267,8 +287,9 @@ println (tree modules { chars := asciiTreeChars })
 7. Table-like column layout with wrapping or clipping.
 8. Best-effort terminal dimension detection.
 9. Progress bar widgets with configurable thresholds and visuals.
-10. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
-11. Low-level rendering APIs for non-IO use cases.
+10. Boxed docs with optional titles and configurable border styles.
+11. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
+12. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
 
