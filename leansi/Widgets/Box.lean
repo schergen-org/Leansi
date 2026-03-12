@@ -1,6 +1,7 @@
 import leansi.Doc.DocOps
 import leansi.Align.AlignCore
 import leansi.Util
+import leansi.Layout.LayoutCore
 
 namespace leansi
 
@@ -114,11 +115,6 @@ private def bottomBorder (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
   let borderWidth := contentWidth + (cfg.paddingX * 2)
   borderText cfg cfg.chars.bottomLeft ++ borderRun cfg borderWidth ++ borderText cfg cfg.chars.bottomRight
 
-/-- Vertically concatenate docs with newline separators. -/
-private def vcatDocs : List (Doc Style) → Doc Style
-  | [] => Doc.empty
-  | d :: ds => ds.foldl (fun acc x => acc ++ Doc.text "\n" ++ x) d
-
 end Box
 
 /-- Draw a box around a styled document with optional title and configurable border style. -/
@@ -131,6 +127,6 @@ def box (content : Doc Style) (cfg : BoxConfig := {}) : Doc Style :=
   let paddingLines := (List.range cfg.paddingY).map (fun _ => Box.emptyContentLine cfg innerWidth)
   let contentLines := lines.map (Box.contentLine cfg innerWidth)
 
-  Box.vcatDocs ([Box.topBorder cfg innerWidth] ++ paddingLines ++ contentLines ++ paddingLines ++ [Box.bottomBorder cfg innerWidth])
+  Layout.vcat ([Box.topBorder cfg innerWidth] ++ paddingLines ++ contentLines ++ paddingLines ++ [Box.bottomBorder cfg innerWidth])
 
 end leansi
