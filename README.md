@@ -232,6 +232,30 @@ let customConfig : ProgressBarConfig := {
 println (Doc.text "Upload: " ++ progressBar customConfig 65)
 ```
 
+### 9) Render trees
+
+Use `Tree` + `tree` for hierarchical output with terminal-friendly branch connectors.
+
+```lean
+let modules : Tree :=
+  Tree.branch (Doc.text "src" |> bold) [
+    Tree.branch (Doc.text "Doc") [
+      Tree.leaf (Doc.text "Type.lean"),
+      Tree.leaf (Doc.text "DocOps.lean")
+    ],
+    Tree.leaf (Doc.text "README.md")
+  ]
+
+println (tree modules)
+println (tree modules { chars := asciiTreeChars })
+```
+
+`tree` supports:
+- Unicode connectors by default (`├─`, `└─`, `│`)
+- ASCII style via `asciiTreeChars`
+- styled connectors via `TreeConfig.connectorStyle`
+- hiding the root with `TreeConfig.showRoot := false`
+
 ## Feature overview
 
 1. Structured `Doc` trees instead of raw string concatenation.
@@ -243,7 +267,8 @@ println (Doc.text "Upload: " ++ progressBar customConfig 65)
 7. Table-like column layout with wrapping or clipping.
 8. Best-effort terminal dimension detection.
 9. Progress bar widgets with configurable thresholds and visuals.
-10. Low-level rendering APIs for non-IO use cases.
+10. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
+11. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
 
@@ -254,6 +279,7 @@ println (Doc.text "Upload: " ++ progressBar customConfig 65)
 - terminal color and dimension detection
 - layout composition with `Layout.vcat` and `Layout.columns`
 - default and customized progress bars
+- tree rendering with Unicode and ASCII connectors
 
 Run it with:
 
