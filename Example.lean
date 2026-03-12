@@ -99,6 +99,7 @@ def main : IO Unit := do
             borderStyle := { fg := some (ColorLevel.truecolor (160, 220, 170)) }
             titleAlignment := Alignment.right
             paddingX := 2
+            maxWidth := 40
           }
       , box
         (box

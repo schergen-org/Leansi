@@ -51,6 +51,10 @@ structure BoxConfig where
   paddingY : Nat := 0
   /-- Minimum inner width (excluding padding and border). -/
   minInnerWidth : Nat := 0
+  /-- Maximum width of the box. -/
+  maxWidth : Nat := 9999
+  /-- Whether to truncate content that exceeds `maxWidth` instead of wrapping it. -/
+  textOverflow : Bool := false
 
 namespace Box
 
@@ -115,11 +119,16 @@ private def bottomBorder (cfg : BoxConfig) (contentWidth : Nat) : Doc Style :=
   let borderWidth := contentWidth + (cfg.paddingX * 2)
   borderText cfg cfg.chars.bottomLeft ++ borderRun cfg borderWidth ++ borderText cfg cfg.chars.bottomRight
 
+private def getLines (cfg : BoxConfig) (content : Doc Style) : List (Doc Style) × BoxConfig :=
+  let maxW :=  (cfg.maxWidth - 2 - 2 * cfg.paddingX)
+  (Layout.handleDocOverflow maxW cfg.textOverflow content, { cfg with minInnerWidth := min cfg.minInnerWidth maxW })
+
 end Box
 
 /-- Draw a box around a styled document with optional title and configurable border style. -/
 def box (content : Doc Style) (cfg : BoxConfig := {}) : Doc Style :=
-  let lines := splitDocLines content
+  let lines := Box.getLines cfg content |>.1
+  let cfg := Box.getLines cfg content |>.2
   let contentWidth := Box.maxLineWidth lines
   let minForTitle := (Box.titleLength cfg.title) - (cfg.paddingX * 2)
   let innerWidth := max cfg.minInnerWidth (max contentWidth minForTitle)
