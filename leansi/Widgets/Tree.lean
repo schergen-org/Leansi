@@ -77,6 +77,7 @@ private def prefixedLabelLines (firstPrefix restPrefix label : Doc Style) : List
   | first :: rest => (firstPrefix ++ first) :: rest.map (fun line => restPrefix ++ line)
 
 /-- Render one node plus its descendants into display lines. -/
+-- `renderNode` is partial because it calls itself recursively, but it is guaranteed to terminate since the tree is finite.
 private partial def renderNode (cfg : TreeConfig) (ancestorHasNext : List Bool) (isLast : Bool)
     (isRoot : Bool) (node : Tree) : List (Doc Style) :=
   match node with
@@ -105,6 +106,7 @@ private partial def renderNode (cfg : TreeConfig) (ancestorHasNext : List Bool) 
 
     thisNodeLines ++ renderChildren children
 /-- Render a sibling list using the same ancestor prefix context. -/
+-- `renderForest` is partial because it calls `renderNode`, which is partial, but it is guaranteed to terminate since the tree is finite.
 private partial def renderForest (cfg : TreeConfig) (ancestorHasNext : List Bool) : List Tree → List (Doc Style)
   | [] => []
   | node :: rest =>
@@ -112,6 +114,7 @@ private partial def renderForest (cfg : TreeConfig) (ancestorHasNext : List Bool
     renderNode cfg ancestorHasNext isLast false node ++ renderForest cfg ancestorHasNext rest
 
 /-- Render a sibling list, marking every node as root-level (no branch prefix before first level). -/
+-- `renderForestAsRoot` is partial because it calls `renderNode`, which is partial, but it is guaranteed to terminate since the tree is finite.
 private partial def renderForestAsRoot (cfg : TreeConfig) : List Tree → List (Doc Style)
   | [] => []
   | node :: rest =>
