@@ -1,5 +1,6 @@
 import leansi.Doc.DocOps
 import leansi.Align.AlignCore
+import leansi.Util
 
 namespace leansi
 
@@ -51,10 +52,6 @@ structure BoxConfig where
   minInnerWidth : Nat := 0
 
 namespace Box
-
-/-- Build a string by repeating one character `n` times. -/
-private def repeatChar (c : Char) (n : Nat) : String :=
-  String.ofList (List.replicate n c)
 
 /-- Render one styled border glyph. -/
 private def borderText (cfg : BoxConfig) (c : Char) : Doc Style :=
