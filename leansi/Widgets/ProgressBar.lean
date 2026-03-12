@@ -1,4 +1,5 @@
 import leansi.Doc.Type
+import leansi.Util
 
 namespace leansi
 
@@ -39,14 +40,10 @@ private def resolveColor (thresholds : List ProgressThreshold) (defaultColor : C
   | some t => t.color
   | none => defaultColor
 
-/-- Build a string by repeating one character `n` times. -/
-private def repeatChar (c : Char) (n : Nat) : String :=
-  String.ofList (List.replicate n c)
-
 /-- Format the percentage label to a fixed width so multiple bars align vertically. -/
 private def formatPercentage (value : Fin 101) : String :=
   let s := toString value.1 ++ "%"
-  let pad := if s.length < 4 then repeatChar ' ' (4 - s.length) else ""
+  let pad := if s.length < 4 then whiteSpaceString (4 - s.length) else ""
   pad ++ s
 
 end Progressbar
@@ -60,7 +57,7 @@ def progressBar (config : ProgressBarConfig := {}) (value : Fin 101) : Doc Style
   let emptyCount := config.width - filledCount
 
   let color := resolveColor config.thresholds config.defaultColor value
-  let barStyle : Style := { fg := some color }
+  let barStyle : Style := { foreground := some color }
   let filledDoc := Doc.text (repeatChar config.filled filledCount) |>.ann barStyle
   let emptyDoc := Doc.text (repeatChar config.empty emptyCount)
   let barDoc := filledDoc ++ emptyDoc

@@ -65,6 +65,87 @@ def main : IO Unit := do
     , Doc.text "Custom:    " ++ progressBar customConfig 65
     ]
 
+  let boxedDocs :=
+    Layout.vcat
+    [ Layout.columns [40] 3
+      [ box
+          (Layout.vcat
+            [ Doc.text "Leansi can draw boxes around docs."
+            , Doc.text "Title placement is configurable."
+            ])
+          {
+            title := some (Doc.text "Unicode Box" |> bright_cyan |> bold)
+            borderStyle := Style.fg_rgb 120 190 255
+            titleAlignment := Alignment.center
+            paddingX := 2
+            paddingY := 1
+          }
+      , box
+          (Doc.text "ASCII fallback works as well.\nHas to be manually enabled.\nRetro!")
+          {
+            title := some (Doc.text "ASCII")
+            chars := asciiBoxChars
+            borderStyle := Style.fg_rgb 55 180 120
+            titleAlignment := Alignment.left
+          }
+      ]
+    , Doc.empty
+    , Layout.columns [40] 3
+      [ box
+          (Doc.text "Rounded corners are available too.\n...if your terminal supports them.")
+          {
+            title := some (Doc.text "Rounded")
+            chars := roundedBoxChars
+            borderStyle := Style.fg_rgb 160 220 170
+            titleAlignment := Alignment.right
+            paddingX := 2
+            maxWidth := 40
+          }
+      , box
+        (box
+          (Doc.text "Boxes inside boxes!")
+          { title := some (Doc.text "Inner Box" |> bright_magenta) , chars := roundedBoxChars, borderStyle := Style.fg_rgb 255 120 255}
+        )
+        { title := some (Doc.text "Outer Box" |> bright_cyan), borderStyle := Style.fg_rgb 120 255 255, paddingX := 0, paddingY := 0 }
+      ]
+    ]
+  let projectTree : Tree :=
+    Tree.branch (Doc.text "leansi" |> bright_cyan |> bold)
+      [ Tree.branch (Doc.text "Active Duty")
+          [ Tree.leaf (Doc.text "Ancient")
+          , Tree.leaf (Doc.text "Anubis")
+          , Tree.leaf (Doc.text "Dust II")
+          , Tree.leaf (Doc.text "Inferno" |> bright_cyan)
+          , Tree.leaf (Doc.text "Mirage")
+          , Tree.leaf (Doc.text "Nuke" |> bright_cyan)
+          , Tree.leaf (Doc.text "Overpass" |> bright_cyan)
+          ]
+      , Tree.branch (Doc.text "Reserve")
+          [ Tree.leaf (Doc.text "Train" |> bright_green)
+          , Tree.leaf (Doc.text "Vertigo" |> bright_green)
+          ]
+      , Tree.leaf (Doc.text "README.md" |> bright_yellow)
+      ]
+
+
+  let trees :=
+    Layout.vcat [
+      Layout.columns [30] 0
+        [ Doc.text "Unicode Tree" |> red |> bold
+        , Doc.text "ASCII Tree" |> red |> bold
+        ]
+      ,
+      Layout.columns [30] 0
+        [ tree projectTree {
+            connectorStyle := Style.fg_rgb 150 180 255
+          }
+        , tree projectTree {
+            chars := asciiTreeChars
+          }
+        ]
+    ]
+
+
 
   let layout :=
     Layout.vcat
@@ -91,6 +172,10 @@ def main : IO Unit := do
       , Layout.columns [15, 90] 3 [Doc.text "Terminal\nDimensions" |> bright_red, dimsResult] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15, 90] 3 [Doc.text "Progress Bars" |> bright_red, progressBars] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Boxes" |> bright_red, boxedDocs] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Trees" |> bright_red, trees] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15,90] 3 [Doc.text "Layout" |> bright_red, layout] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty

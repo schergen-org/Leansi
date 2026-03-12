@@ -35,16 +35,16 @@ def ansi16Color : Ansi16Color := {}
 Colors are optional so a style can override just the foreground or background
 while inheriting the remaining attributes from surrounding annotations. -/
 structure Style where
-  fg : Option ColorLevel := none
-  bg : Option ColorLevel := none
-  bold : Bool := false
-  dim : Bool := false
-  underline : Bool := false
-  italic : Bool := false
-  blink : Bool := false
-  reverse : Bool := false
-  hidden : Bool := false
-  strikethrough : Bool := false
+  foreground : Option ColorLevel := none
+  background : Option ColorLevel := none
+  isBold : Bool := false
+  isDim : Bool := false
+  isUnderline : Bool := false
+  isItalic : Bool := false
+  isBlink : Bool := false
+  isReverse : Bool := false
+  isHidden : Bool := false
+  isStrikethrough : Bool := false
 deriving Repr, Inhabited, BEq
 
 end leansi

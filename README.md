@@ -18,7 +18,7 @@
 <p align="center">A Lean 4 library for readable terminal output.</p><br>
 
 <p align="center">
-    <img width="700" alt="Leansi-Examples" src="https://github.com/user-attachments/assets/1d140ecf-855a-4cac-b8e6-dc8cbcdb2a76" />
+    <img width="700"  alt="Leansi-Examples" src="https://github.com/user-attachments/assets/bf8e4a39-8493-4e38-aa09-5f36849ff422" />
 </p>
 
 `Leansi` is a Lean 4 library for building terminal output from structured documents. It provides composable styling, color fallback (ANSI16/ANSI256/RGB), alignment, table-like layouts, terminal capability detection, and progress bars for CLI applications.
@@ -232,6 +232,50 @@ let customConfig : ProgressBarConfig := {
 println (Doc.text "Upload: " ++ progressBar customConfig 65)
 ```
 
+### 9) Draw boxes around docs
+
+Use `box` to wrap any `Doc Style` with a configurable border and optional title.
+
+```lean
+let panel :=
+  box
+    (Layout.vcat [Doc.text "First line", Doc.text "Second line"])
+    {
+      title := some (Doc.text "Info" |> bold |> bright_cyan)
+      titleAlignment := Alignment.center
+      borderStyle := { fg := some (ColorLevel.truecolor (120, 190, 255)) }
+      paddingX := 2
+      paddingY := 1
+    }
+
+println panel
+```
+
+You can switch presets via `chars := asciiBoxChars` or `chars := roundedBoxChars`.
+### 10) Render trees
+
+Use `Tree` + `tree` for hierarchical output with terminal-friendly branch connectors.
+
+```lean
+let modules : Tree :=
+  Tree.branch (Doc.text "src" |> bold) [
+    Tree.branch (Doc.text "Doc") [
+      Tree.leaf (Doc.text "Type.lean"),
+      Tree.leaf (Doc.text "DocOps.lean")
+    ],
+    Tree.leaf (Doc.text "README.md")
+  ]
+
+println (tree modules)
+println (tree modules { chars := asciiTreeChars })
+```
+
+`tree` supports:
+- Unicode connectors by default (`├─`, `└─`, `│`)
+- ASCII style via `asciiTreeChars`
+- styled connectors via `TreeConfig.connectorStyle`
+- hiding the root with `TreeConfig.showRoot := false`
+
 ## Feature overview
 
 1. Structured `Doc` trees instead of raw string concatenation.
@@ -243,7 +287,9 @@ println (Doc.text "Upload: " ++ progressBar customConfig 65)
 7. Table-like column layout with wrapping or clipping.
 8. Best-effort terminal dimension detection.
 9. Progress bar widgets with configurable thresholds and visuals.
-10. Low-level rendering APIs for non-IO use cases.
+10. Boxed docs with optional titles and configurable border styles.
+11. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
+12. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
 
@@ -254,6 +300,7 @@ println (Doc.text "Upload: " ++ progressBar customConfig 65)
 - terminal color and dimension detection
 - layout composition with `Layout.vcat` and `Layout.columns`
 - default and customized progress bars
+- tree rendering with Unicode and ASCII connectors
 
 Run it with:
 
