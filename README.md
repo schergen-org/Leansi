@@ -252,7 +252,7 @@ println (tree modules { chars := asciiTreeChars })
 
 `tree` supports:
 - Unicode connectors by default (`├─`, `└─`, `│`)
-- ASCII fallback via `asciiTreeChars`
+- ASCII style via `asciiTreeChars`
 - styled connectors via `TreeConfig.connectorStyle`
 - hiding the root with `TreeConfig.showRoot := false`
 
@@ -267,7 +267,7 @@ println (tree modules { chars := asciiTreeChars })
 7. Table-like column layout with wrapping or clipping.
 8. Best-effort terminal dimension detection.
 9. Progress bar widgets with configurable thresholds and visuals.
-10. Tree widgets for hierarchical output (`├─`, `└─`) with ASCII fallback.
+10. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
 11. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
