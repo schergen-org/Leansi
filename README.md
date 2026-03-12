@@ -252,6 +252,29 @@ println panel
 ```
 
 You can switch presets via `chars := asciiBoxChars` or `chars := roundedBoxChars`.
+### 10) Render trees
+
+Use `Tree` + `tree` for hierarchical output with terminal-friendly branch connectors.
+
+```lean
+let modules : Tree :=
+  Tree.branch (Doc.text "src" |> bold) [
+    Tree.branch (Doc.text "Doc") [
+      Tree.leaf (Doc.text "Type.lean"),
+      Tree.leaf (Doc.text "DocOps.lean")
+    ],
+    Tree.leaf (Doc.text "README.md")
+  ]
+
+println (tree modules)
+println (tree modules { chars := asciiTreeChars })
+```
+
+`tree` supports:
+- Unicode connectors by default (`├─`, `└─`, `│`)
+- ASCII style via `asciiTreeChars`
+- styled connectors via `TreeConfig.connectorStyle`
+- hiding the root with `TreeConfig.showRoot := false`
 
 ## Feature overview
 
@@ -265,7 +288,8 @@ You can switch presets via `chars := asciiBoxChars` or `chars := roundedBoxChars
 8. Best-effort terminal dimension detection.
 9. Progress bar widgets with configurable thresholds and visuals.
 10. Boxed docs with optional titles and configurable border styles.
-11. Low-level rendering APIs for non-IO use cases.
+11. Tree widgets for hierarchical output (`├─`, `└─`) with manual ASCII "fallback".
+12. Low-level rendering APIs for non-IO use cases.
 
 ## Included example
 
@@ -276,6 +300,7 @@ You can switch presets via `chars := asciiBoxChars` or `chars := roundedBoxChars
 - terminal color and dimension detection
 - layout composition with `Layout.vcat` and `Layout.columns`
 - default and customized progress bars
+- tree rendering with Unicode and ASCII connectors
 
 Run it with:
 

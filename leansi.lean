@@ -15,3 +15,4 @@ import leansi.Align.AlignCore
 import leansi.Layout.LayoutCore
 import leansi.Widgets.ProgressBar
 import leansi.Widgets.Box
+import leansi.Widgets.Tree

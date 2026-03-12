@@ -109,6 +109,44 @@ def main : IO Unit := do
         { title := some (Doc.text "Outer Box" |> bright_cyan), borderStyle := {fg := some (ColorLevel.truecolor (120, 255, 255))}, paddingX := 0, paddingY := 0 }
       ]
     ]
+  let projectTree : Tree :=
+    Tree.branch (Doc.text "leansi" |> bright_cyan |> bold)
+      [ Tree.branch (Doc.text "Active Duty")
+          [ Tree.leaf (Doc.text "Ancient")
+          , Tree.leaf (Doc.text "Anubis")
+          , Tree.leaf (Doc.text "Dust II")
+          , Tree.leaf (Doc.text "Inferno" |> bright_cyan)
+          , Tree.leaf (Doc.text "Mirage")
+          , Tree.leaf (Doc.text "Nuke" |> bright_cyan)
+          , Tree.leaf (Doc.text "Overpass" |> bright_cyan)
+          ]
+      , Tree.branch (Doc.text "Reserve")
+          [ Tree.leaf (Doc.text "Train" |> bright_green)
+          , Tree.leaf (Doc.text "Vertigo" |> bright_green)
+          ]
+      , Tree.leaf (Doc.text "README.md" |> bright_yellow)
+      ]
+
+
+  let trees :=
+    Layout.vcat [
+      Layout.columns [30] 0
+        [ Doc.text "Unicode Tree" |> red |> bold
+        , Doc.text "ASCII Tree" |> red |> bold
+        ]
+      ,
+      Layout.columns [30] 0
+        [ tree projectTree {
+            connectorStyle := { fg := some (ColorLevel.truecolor (150, 180, 255)) }
+          }
+        , tree projectTree {
+            chars := asciiTreeChars
+            connectorStyle := { fg := some (ColorLevel.truecolor (255, 200, 140))}
+          }
+        ]
+    ]
+
+
 
   let layout :=
     Layout.vcat
@@ -137,6 +175,8 @@ def main : IO Unit := do
       , Layout.columns [15, 90] 3 [Doc.text "Progress Bars" |> bright_red, progressBars] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15, 90] 3 [Doc.text "Boxes" |> bright_red, boxedDocs] [Alignment.center, Alignment.left] true
+      , Doc.empty, Doc.empty
+      , Layout.columns [15, 90] 3 [Doc.text "Trees" |> bright_red, trees] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15,90] 3 [Doc.text "Layout" |> bright_red, layout] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
