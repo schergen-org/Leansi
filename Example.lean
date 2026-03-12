@@ -67,29 +67,41 @@ def main : IO Unit := do
 
   let projectTree : Tree :=
     Tree.branch (Doc.text "leansi" |> bright_cyan |> bold)
-      [ Tree.branch (Doc.text "Doc")
-          [ Tree.leaf (Doc.text "Type.lean")
-          , Tree.leaf (Doc.text "DocOps.lean")
-          , Tree.leaf (Doc.text "Styling.lean")
+      [ Tree.branch (Doc.text "Active Duty")
+          [ Tree.leaf (Doc.text "Ancient")
+          , Tree.leaf (Doc.text "Anubis")
+          , Tree.leaf (Doc.text "Dust II")
+          , Tree.leaf (Doc.text "Inferno" |> bright_cyan)
+          , Tree.leaf (Doc.text "Mirage")
+          , Tree.leaf (Doc.text "Nuke" |> bright_cyan)
+          , Tree.leaf (Doc.text "Overpass" |> bright_cyan)
           ]
-      , Tree.branch (Doc.text "Widgets")
-          [ Tree.leaf (Doc.text "ProgressBar.lean" |> bright_green)
-          , Tree.leaf (Doc.text "Tree.lean" |> bright_green)
+      , Tree.branch (Doc.text "Reserve")
+          [ Tree.leaf (Doc.text "Train" |> bright_green)
+          , Tree.leaf (Doc.text "Vertigo" |> bright_green)
           ]
       , Tree.leaf (Doc.text "README.md" |> bright_yellow)
       ]
 
+
   let trees :=
-    Layout.vcat
-      [ tree projectTree {
-          connectorStyle := { fg := some (ColorLevel.truecolor (150, 180, 255)) }
-        }
-      , Doc.empty
-      , tree projectTree {
-          chars := asciiTreeChars
-          connectorStyle := { fg := some (ColorLevel.truecolor (255, 200, 140)) }
-        }
-      ]
+    Layout.vcat [
+      Layout.columns [30] 0
+        [ Doc.text "Unicode Tree" |> red |> bold
+        , Doc.text "ASCII Tree" |> red |> bold
+        ]
+      ,
+      Layout.columns [30] 0
+        [ tree projectTree {
+            connectorStyle := { fg := some (ColorLevel.truecolor (150, 180, 255)) }
+          }
+        , tree projectTree {
+            chars := asciiTreeChars
+            connectorStyle := { fg := some (ColorLevel.truecolor (255, 200, 140))}
+          }
+        ]
+    ]
+
 
 
   let layout :=
@@ -118,7 +130,7 @@ def main : IO Unit := do
       , Doc.empty, Doc.empty
       , Layout.columns [15, 90] 3 [Doc.text "Progress Bars" |> bright_red, progressBars] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
-      , Layout.columns [15, 90] 3 [Doc.text "Tree" |> bright_red, trees] [Alignment.center, Alignment.left] true
+      , Layout.columns [15, 90] 3 [Doc.text "Trees" |> bright_red, trees] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
       , Layout.columns [15,90] 3 [Doc.text "Layout" |> bright_red, layout] [Alignment.center, Alignment.left] true
       , Doc.empty, Doc.empty
