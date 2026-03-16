@@ -1,0 +1,497 @@
+# Leansi
+
+Leansi is a Lean 4 library for building readable terminal output from structured documents instead of raw strings.
+
+This file is a self-contained reference for LLMs that need to help users write Leansi code. It focuses on the intended public API, normal usage patterns, and the main behavior rules that affect generated examples.
+
+## Project Facts
+
+- Language: Lean 4
+- Repository target: `leanprover/lean4:v4.28.0`
+- Public entrypoint: `import leansi`
+- Typical openings:
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+```
+
+- Primary use case: CLI output, formatted terminal text, dashboards, status lines, boxes, trees, and progress bars
+- Not a full-screen TUI framework: do not promise cursor control, interactive widgets, or terminal state management APIs that do not exist in this repository
+
+## What An LLM Should Recommend By Default
+
+When helping a user:
+
+1. Use `Doc Style` for normal styled terminal output.
+2. Build content with `Doc.text`, `Doc.empty`, `++`, `Layout.vcat`, and `Layout.hcatSep`.
+3. Apply styling with the high-level helpers in `leansi.Doc`.
+4. Print with `println` unless the user explicitly wants a `String`.
+5. Use `Layout.columns` for fixed-width table-like layouts.
+6. Use `alignDoc` or `Layout.fitToTerminal` for banners and width-aware alignment.
+7. Use `box`, `tree`, `forest`, and `progressBar` for common CLI widgets.
+8. Prefer public APIs over internal helpers.
+
+## Core Model
+
+Leansi revolves around a generic document tree:
+
+```lean
+inductive Doc (ann : Type) where
+| empty : Doc ann
+| text : String -> Doc ann
+| concat : Doc ann -> Doc ann -> Doc ann
+| ann : ann -> Doc ann -> Doc ann
+```
+
+Important operations:
+
+- `Doc.empty`: empty document
+- `Doc.text`: visible text
+- `Doc.ann`: annotate a subtree
+- `++`: concatenate documents
+
+Typical user code uses `Doc Style`, where `Style` controls colors and text attributes.
+
+## Public API Cheat Sheet
+
+### Documents and Rendering
+
+- `Doc.empty`
+- `Doc.text`
+- `Doc.ann`
+- `++`
+- `Doc.render : Doc ann -> String`
+- `Doc.renderWithStyle : (ann -> Style) -> ColorSupport -> Doc ann -> String`
+- `render : Doc Unit -> String`
+- `print : Doc Style -> IO Unit`
+- `println : Doc Style -> IO Unit`
+
+Guidance:
+
+- `Doc.render` ignores annotations completely.
+- `println` is the normal choice for CLI output.
+- `Doc.renderWithStyle` is the right tool for custom annotation types or explicit rendering tests.
+
+### High-Level Styling (`open leansi.Doc`)
+
+Text attributes:
+
+- `bold`
+- `underline`
+- `italic`
+- `dim`
+- `blink`
+- `reverse`
+- `hidden`
+- `strikethrough`
+
+ANSI 16 foreground colors:
+
+- `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`
+- `bright_black`, `bright_red`, `bright_green`, `bright_yellow`
+- `bright_blue`, `bright_magenta`, `bright_cyan`, `bright_white`
+- `grey`, `gray`
+
+ANSI 16 background colors:
+
+- `bg_black`, `bg_red`, `bg_green`, `bg_yellow`, `bg_blue`, `bg_magenta`, `bg_cyan`, `bg_white`
+- `bg_bright_black`, `bg_bright_red`, `bg_bright_green`, `bg_bright_yellow`
+- `bg_bright_blue`, `bg_bright_magenta`, `bg_bright_cyan`, `bg_bright_white`
+- `bg_grey`, `bg_gray`
+
+Richer color helpers:
+
+- `fg_ansi_256 : Nat -> Doc Style -> Style -> Doc Style`
+- `bg_ansi_256 : Nat -> Doc Style -> Style -> Doc Style`
+- `fg_rgb : Nat -> Nat -> Nat -> Doc Style -> Style -> Doc Style`
+- `bg_rgb : Nat -> Nat -> Nat -> Doc Style -> Style -> Doc Style`
+
+Practical usage pattern:
+
+```lean
+let msg : Doc Style :=
+  Doc.text "ready" |> bold |> bright_green
+
+let accent : Doc Style :=
+  Doc.text "rgb accent" |> fg_rgb 120 180 255
+```
+
+The trailing `Style` argument on `fg_ansi_256`, `bg_ansi_256`, `fg_rgb`, and `bg_rgb` has a default value and is usually omitted.
+
+### Low-Level Style API
+
+Relevant types:
+
+```lean
+inductive ColorLevel where
+| none
+| ansi16 : Nat -> ColorLevel
+| ansi256 : Nat -> ColorLevel
+| truecolor : Nat × Nat × Nat -> ColorLevel
+
+structure Style where
+  foreground : Option ColorLevel := none
+  background : Option ColorLevel := none
+  isBold : Bool := false
+  isDim : Bool := false
+  isUnderline : Bool := false
+  isItalic : Bool := false
+  isBlink : Bool := false
+  isReverse : Bool := false
+  isHidden : Bool := false
+  isStrikethrough : Bool := false
+```
+
+Useful low-level constructors:
+
+- `Style.bold`
+- `Style.underline`
+- `Style.italic`
+- `Style.dim`
+- `Style.blink`
+- `Style.reverse`
+- `Style.hidden`
+- `Style.strikethrough`
+- `Style.fg_ansi_16`
+- `Style.bg_ansi_16`
+- `Style.fg_ansi_256`
+- `Style.bg_ansi_256`
+- `Style.fg_rgb`
+- `Style.bg_rgb`
+- `Style.combine`
+
+`Style.combine older newer` follows Leansi's nested-style behavior:
+
+- newer foreground/background colors override older ones
+- boolean attributes accumulate with logical OR
+
+### Color Support
+
+- `ColorSupport.none`
+- `ColorSupport.ansi16`
+- `ColorSupport.ansi256`
+- `ColorSupport.truecolor`
+- `detectColorSupport : IO ColorSupport`
+
+Detection rules:
+
+1. `NO_COLOR` disables colors.
+2. `TERM=dumb` disables colors.
+3. `COLORTERM=truecolor` or `COLORTERM=24bit` enables truecolor.
+4. `TERM` containing `256color` enables ANSI 256.
+5. Any other non-empty `TERM` becomes ANSI 16.
+6. Otherwise Leansi uses `none`.
+
+`print` and `println` call this automatically and the result is cached.
+
+### Alignment and Layout
+
+- `Alignment.left`
+- `Alignment.right`
+- `Alignment.center`
+- `Alignment.full`
+- `alignDoc : Nat -> Alignment -> Doc ann -> Doc ann`
+
+Layout primitives:
+
+- `Layout.lineBreak`
+- `Layout.spaces : Nat -> Doc ann`
+- `Layout.hcat : List (Doc ann) -> Doc ann`
+- `Layout.hcatSep : Nat -> List (Doc ann) -> Doc ann`
+- `Layout.vcat : List (Doc ann) -> Doc ann`
+
+Columns:
+
+```lean
+Layout.columns :
+  List Nat ->
+  Nat ->
+  List (Doc ann) ->
+  List Alignment ->
+  Bool ->
+  Bool ->
+  Doc ann
+```
+
+Parameter order:
+
+1. column widths
+2. gap between columns
+3. column documents
+4. per-column alignments
+5. `hideOverflow` (default `false`)
+6. `useMinRows` (default `false`)
+
+Behavior notes:
+
+- overflow wraps when `hideOverflow = false`
+- overflow clips when `hideOverflow = true`
+- different row counts keep the tallest result unless `useMinRows = true`
+- if there are more documents than widths, the last width is reused
+- if there are more documents than alignments, `Alignment.left` is used
+
+Terminal-aware layout:
+
+- `getTerminalDimensions : IO (Option (Nat × Nat))`
+- `Layout.fitToTerminal : Alignment -> Doc ann -> IO (Doc ann)`
+
+`getTerminalDimensions` returns `(rows, cols)` when available. Leansi tries `LINES` and `COLUMNS`, then platform-specific terminal queries, and returns `none` when no useful TTY size is available.
+
+### Widgets
+
+Progress bars:
+
+- `ProgressThreshold`
+- `ProgressBarConfig`
+- `progressBar : ProgressBarConfig -> Fin 101 -> Doc Style`
+- `simpleProgressBar : Nat -> Fin 101 -> Doc Style`
+
+Important rule:
+
+- progress values are `Fin 101`, so valid values are `0` through `100`
+
+Boxes:
+
+- `BoxChars`
+- `asciiBoxChars`
+- `roundedBoxChars`
+- `BoxConfig`
+- `box : Doc Style -> BoxConfig -> Doc Style`
+
+Important box behaviors:
+
+- titles are optional
+- `paddingX` and `paddingY` add inner padding
+- `maxWidth` constrains content width
+- `textOverflow = false` wraps content
+- `textOverflow = true` truncates content
+- border styling applies to border glyphs only, not to content
+
+Trees:
+
+- `Tree`
+- `Tree.leaf`
+- `Tree.branch`
+- `TreeChars`
+- `asciiTreeChars`
+- `TreeConfig`
+- `tree : Tree -> TreeConfig -> Doc Style`
+- `forest : List Tree -> TreeConfig -> Doc Style`
+
+Important tree behaviors:
+
+- Unicode connectors are default
+- multi-line labels are supported
+- continuation lines align under the label, not under the connector
+- `showRoot := false` treats the root as an invisible container
+
+## Canonical Examples
+
+### Quick Start
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def main : IO Unit := do
+  let msg : Doc Style := Doc.text "Leansi demo" |> bold |> bright_cyan
+  println msg
+```
+
+### Simple Status Row
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def statusRow : Doc Style :=
+  Layout.columns [12, 18, 10] 2
+    [ Doc.text "Package" |> bold
+    , Doc.text "Component" |> bold
+    , Doc.text "ready" |> bright_green
+    ]
+    [Alignment.left, Alignment.left, Alignment.right]
+
+def main : IO Unit := do
+  println statusRow
+```
+
+### Width-Aware Banner
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def main : IO Unit := do
+  let banner <- Layout.fitToTerminal Alignment.center (Doc.text "BUILD OK" |> bold |> bright_green)
+  println banner
+```
+
+### Boxed Panel
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def panel : Doc Style :=
+  box
+    (Layout.vcat
+      [ Doc.text "Leansi can draw boxes around docs."
+      , Doc.text "Title placement is configurable."
+      ])
+    {
+      title := some (Doc.text "Info" |> bold |> bright_cyan)
+      titleAlignment := Alignment.center
+      borderStyle := Style.fg_rgb 120 190 255
+      paddingX := 2
+      paddingY := 1
+    }
+
+def main : IO Unit := do
+  println panel
+```
+
+### Tree Rendering
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def projectTree : Tree :=
+  Tree.branch (Doc.text "leansi" |> bright_cyan |> bold)
+    [ Tree.branch (Doc.text "Doc")
+        [ Tree.leaf (Doc.text "Type.lean")
+        , Tree.leaf (Doc.text "Styling.lean")
+        ]
+    , Tree.leaf (Doc.text "README.md" |> bright_yellow)
+    ]
+
+def main : IO Unit := do
+  println (tree projectTree { connectorStyle := Style.fg_rgb 150 180 255 })
+```
+
+### Progress Bar
+
+```lean
+import leansi
+
+open leansi
+open leansi.Doc
+
+def customConfig : ProgressBarConfig := {
+  width := 22
+  filled := '#'
+  empty := '.'
+  brackets := none
+  thresholds := [
+    { upperBound := 50, color := ColorLevel.truecolor (255, 100, 100) },
+    { upperBound := 100, color := ColorLevel.truecolor (100, 255, 100) }
+  ]
+}
+
+def main : IO Unit := do
+  println (Doc.text "Upload: " ++ progressBar customConfig 65)
+```
+
+### Custom Annotation Type
+
+```lean
+import leansi
+
+open leansi
+
+inductive Mark where
+| info
+| danger
+
+def markToStyle : Mark -> Style
+| .info => Style.fg_rgb 120 190 255
+| .danger => Style.bold (Style.red)
+
+def rendered : String :=
+  (Doc.ann Mark.info (Doc.text "notice")).renderWithStyle markToStyle ColorSupport.truecolor
+```
+
+Use this pattern only when the user really needs custom annotations. For normal CLI code, prefer `Doc Style`.
+
+## Behavioral Rules An LLM Should Preserve
+
+- Styling is structural. Keep content as `Doc` values until rendering or printing.
+- Requested colors may be downgraded at render time based on terminal support.
+- `Doc.render` strips all annotations.
+- `println` and `print` preserve styling by rendering with detected color support.
+- `alignDoc` aligns to a fixed width but is not a general text wrapping API.
+- `Alignment.full` performs simple terminal-oriented space redistribution.
+- `Layout.columns` is the main fixed-width layout tool.
+- `Layout.fitToTerminal` only aligns; it does not create columns or complex wrapping on its own.
+- `box` and `Layout.columns` rely on overflow logic for wrapping or clipping.
+- `progressBar` color thresholds should be listed in ascending order of `upperBound`.
+
+## Safe Answer Patterns For User Support
+
+If a user asks for:
+
+- a simple colored message: use `Doc.text ... |> style |> style` and `println`
+- multiple lines: use `Layout.vcat`
+- inline gaps: use `Layout.hcatSep`
+- table-like terminal output: use `Layout.columns`
+- centered banners: use `alignDoc` or `Layout.fitToTerminal`
+- terminal-size-aware behavior: use `getTerminalDimensions` or `Layout.fitToTerminal`
+- plain strings for tests or logs: use `Doc.render` or `Doc.renderWithStyle`
+- nested panels: use `box`
+- hierarchy output: use `tree` or `forest`
+- status indicators: use `progressBar`
+
+## Things The LLM Should Not Invent
+
+Do not claim Leansi provides:
+
+- a markdown parser
+- HTML rendering
+- a general table data structure beyond `Layout.columns`
+- cursor movement or screen clearing widgets
+- asynchronous live progress updates
+- a theme system
+- automatic terminal resize subscriptions
+
+Do not recommend these internal helpers as the primary public API:
+
+- `concatDocs`
+- `docVisualLength`
+- `coalesceText`
+- `plainText`
+- `takeDoc`
+- `dropDoc`
+- `appendLineLists`
+- `splitDocLines`
+- `justifyFull`
+- `Layout.handleDocOverflow`
+- `Layout.columns'`
+- ANSI encoding helpers
+- color downsampling helpers
+
+## Short Summary
+
+If unsure, generate Leansi examples that follow this pattern:
+
+1. `import leansi`
+2. `open leansi`
+3. `open leansi.Doc`
+4. build `Doc Style` values with `Doc.text`, `++`, and layout helpers
+5. style with `bold`, color helpers, and related `leansi.Doc` combinators
+6. output with `println`
+
+That pattern matches the intended user-facing API of this repository.
