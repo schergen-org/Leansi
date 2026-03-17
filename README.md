@@ -75,10 +75,16 @@ def main : IO Unit := do
 ```
 
 ## Wiki
-GitLab Wiki 
+Extended documentation, design notes, and additional examples are maintained in the GitHub Wiki.
+
+- [Leansi Wiki (GitHub)](https://github.com/schergen-org/Leansi/wiki)
 
 ## LLM Textfile
+For LLM-based tools, this repository provides a machine-oriented reference file:
 
+- [llms.txt](llms.txt)
+
+It summarizes the public API, recommended usage patterns, and behavior rules (for example, color support detection and style composition) so assistants can generate correct Lean snippets.
 
 ## Feature overview
 
