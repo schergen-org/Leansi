@@ -113,9 +113,17 @@ terminal with weaker color support. -/
 def fg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann (Style.fg_rgb r g b s)
 
+/-- Set foreground color using a hexadecimal string. -/
+def fg_hex (hex : String) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann (Style.fg_hex hex s)
+
 /-- Set background color using an RGB triple. -/
 def bg_rgb (r g b : Nat) (doc : Doc Style) (s : Style := {}) : Doc Style :=
   doc.ann (Style.bg_rgb r g b s)
+
+/-- Set background color using a hexadecimal string. -/
+def bg_hex (hex : String) (doc : Doc Style) (s : Style := {}) : Doc Style :=
+  doc.ann (Style.bg_hex hex s)
 
 end Doc
 end leansi

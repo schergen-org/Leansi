@@ -1,4 +1,5 @@
 import leansi.Style.Types
+import leansi.Util
 
 namespace leansi
 namespace Style
@@ -122,9 +123,17 @@ terminal with weaker color support. -/
 def fg_rgb (r g b : Nat) (s : Style := {}) : Style :=
   { s with foreground := some (ColorLevel.truecolor (r, g, b)) }
 
+/-- Set foreground color using a hexadecimal string. -/
+def fg_hex (hex : String) (s : Style := {}) : Style :=
+  { s with foreground := some (ColorLevel.truecolor (rgbFromHex hex)) }
+
 /-- Set background color using an RGB triple. -/
 def bg_rgb (r g b : Nat) (s : Style := {}) : Style :=
   { s with background := some (ColorLevel.truecolor (r, g, b)) }
+
+/-- Set background color using a hexadecimal string. -/
+def bg_hex (hex : String) (s : Style := {}) : Style :=
+  { s with background := some (ColorLevel.truecolor (rgbFromHex hex)) }
 
 end Style
 end leansi
