@@ -37,7 +37,7 @@ def main : IO Unit := do
 
 
   let support ← detectColorSupport
-  let supportText := (Doc.text "Detected color support: ") ++ (Doc.text s!"{support}" |> bold |> bright_cyan)
+  let supportText := (Doc.text "Detected color support: ") ++ (Doc.text s!"{support}" |> bold |> fg_hex "#00ffcc")
 
 
   let dims ← leansi.getTerminalDimensions
