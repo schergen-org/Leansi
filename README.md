@@ -1,6 +1,6 @@
 [![Wiki](https://img.shields.io/badge/wiki-GitHub-blue.svg)](https://github.com/schergen-org/Leansi/wiki)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Release](https://img.shields.io/github/v/release/schergen-org/Leansi)](https://github.com/schergen-org/lfetch/releases/tag/v0.1.0)
+[![GitHub Release](https://img.shields.io/github/v/release/schergen-org/Leansi)](https://github.com/schergen-org/Leansi/releases/tag/v1.1.0)
 [![Lean Action CI](https://github.com/schergen-org/Leansi/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/schergen-org/Leansi/actions/workflows/lean_action_ci.yml)
 
 > [!NOTE]  
