@@ -26,6 +26,9 @@
 
 `Leansi` is a Lean 4 library for building terminal output from structured documents. It provides composable styling, color fallback (ANSI16/ANSI256/RGB), alignment, table-like layouts, terminal capability detection, and progress bars for CLI applications.
 
+> [!TIP]
+> [lfetch](https://github.com/schergen-org/lfetch) is a program that demonstrates an example implementation using Leansi.
+
 ## Installation
 
 This repository is pinned to:
